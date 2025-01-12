@@ -1,0 +1,4 @@
+model_exports/
+__pycache__/
+experiments/
+*.gguf

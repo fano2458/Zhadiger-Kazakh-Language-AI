@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  triton_ai_services:
+    command: ["--model-repository=/models", "--log-info=1"]
+    build:
+      context: .
+    restart: unless-stopped
+    ports:
+      - 8500:8000
+      - 8501:8001
+      - 8502:8002
+    volumes:
+      - ./:/workspace
+      - ./model_repository:/models
+      - ./assets:/assets
+    environment:
+      - LC_ALL=C.UTF-8
+      - LANG=C.UTF-8
+    shm_size: "64gb"
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu]
