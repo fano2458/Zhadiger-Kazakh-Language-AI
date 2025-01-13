@@ -6,6 +6,15 @@ This repository provides AI services for the Kazakh language, including a langua
 
 Currently, it contains only one model:
 - `kazllm`: A language model for Kazakh.
+- `ner`: Model for named enteties recognition.
+- `image_caption`: Model for caption generation for images.
+
+## TODO List
+
+- [ ] Check image_caption model (request_test.py)
+- [ ] Convert current models to ONNX format.
+- [ ] Convert ONNX models to TensorRT engine.
+- [ ] Add more models to the repository.
 
 ## Getting Started
 

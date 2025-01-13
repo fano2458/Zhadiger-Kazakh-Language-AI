@@ -2,4 +2,8 @@ model_exports/
 __pycache__/
 experiments/
 *.gguf
-assets/*/*/
+*.pth
+*.pickle
+*.safetensors
+*.json
+*.txt

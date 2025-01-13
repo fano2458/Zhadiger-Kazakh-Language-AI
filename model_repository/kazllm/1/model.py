@@ -5,7 +5,7 @@ import numpy as np
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.llm = Llama(model_path="/assets/kazllm/checkpoints_llama8b_031224_18900-Q4_K_M.gguf")
+        self.llm = Llama(model_path="/assets/kazllm/checkpoint/checkpoints_llama8b_031224_18900-Q4_K_M.gguf")
 
     def execute(self, requests):
         responses = []

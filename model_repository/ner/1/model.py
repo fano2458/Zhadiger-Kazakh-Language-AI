@@ -7,7 +7,7 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification
 
 class TritonPythonModel:
     def initialize(self, args):
-        model_checkpoint = "/assets/ner/checkpoint-8.0"
+        model_checkpoint = "/assets/ner/checkpoint"
         self.tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
         self.model = AutoModelForTokenClassification.from_pretrained(model_checkpoint)
 
