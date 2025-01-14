@@ -13,7 +13,7 @@ Currently, it contains four models:
 ## TODO List
 
 - [ ] Check image_caption model (request_test.py).
-- [ ] Check ocr, tts, stt.
+- [ ] Check ocr, stt.
 - [ ] Convert current models to ONNX format.
 - [ ] Convert ONNX models to TensorRT engine.
 - [ ] Add more models to the repository.

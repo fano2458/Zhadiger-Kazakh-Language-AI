@@ -1,6 +1,6 @@
 llama-cpp-python
 transformers
 torch
+torchvision
 pillow
-surya-ocr   # for OCR
-espnet      # for TTS
+surya-ocr

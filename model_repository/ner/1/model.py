@@ -1,5 +1,6 @@
 import re
 import json
+import torch
 import numpy as np
 import triton_python_backend_utils as pb_utils
 from transformers import AutoTokenizer, AutoModelForTokenClassification
@@ -7,9 +8,10 @@ from transformers import AutoTokenizer, AutoModelForTokenClassification
 
 class TritonPythonModel:
     def initialize(self, args):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model_checkpoint = "/assets/ner/checkpoint"
         self.tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
-        self.model = AutoModelForTokenClassification.from_pretrained(model_checkpoint)
+        self.model = AutoModelForTokenClassification.from_pretrained(model_checkpoint).to(self.device)
 
         self.labels_dict = {0:"O", 1:"B-ADAGE", 2:"I-ADAGE", 3:"B-ART", 4:"I-ART", 5:"B-CARDINAL",
                 6:"I-CARDINAL", 7:"B-CONTACT", 8:"I-CONTACT", 9:"B-DATE", 10:"I-DATE", 11:"B-DISEASE",
@@ -29,8 +31,9 @@ class TritonPythonModel:
             texts = pb_utils.get_input_tensor_by_name(request, "TEXTS").as_numpy()
             texts = [el.decode() for el in texts][0]
 
-            tokenized_inputs = self.tokenizer(texts, return_tensors="pt")
-            output = self.model(**tokenized_inputs)
+            tokenized_inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)
+            with torch.no_grad():
+                output = self.model(**tokenized_inputs)
             predictions = np.argmax(output.logits.detach().numpy(), axis=2)
 
             word_ids = tokenized_inputs.word_ids(batch_index=0)

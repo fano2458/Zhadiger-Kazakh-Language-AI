@@ -4,6 +4,9 @@ import numpy as np
 from argparse import Namespace
 import triton_python_backend_utils as pb_utils
 from PIL import Image as PIL_Image
+import io
+import base64
+import torchvision
 
 import sys
 sys.path.append('/assets/image_caption')
@@ -49,14 +52,15 @@ class TritonPythonModel:
                                         max_seq_len=63, drop_args=model_args.drop_args,
                                         rank=0)
         
-        device = torch.device("cpu")
-        self.model.to(device)
+        self.device = torch.device("cpu")
 
-        checkpoint = torch.load(load_path, map_location=device)
+        checkpoint = torch.load(load_path, map_location=self.device)
         self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.model.to(self.device)
 
-        self.transf_1 = lambda img: img.resize((img_size, img_size), PIL_Image.BICUBIC)
-        self.transf_2 = lambda img: (np.array(img) / 255.0 - np.array([0.485, 0.456, 0.406])) / np.array([0.229, 0.224, 0.225])
+        self.transf_1 = torchvision.transforms.Compose([torchvision.transforms.Resize((img_size, img_size))])
+        self.transf_2 = torchvision.transforms.Compose([torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                                                                        std=[0.229, 0.224, 0.225])])
         self.model.eval()
 
         """### Beam search configuration"""
@@ -73,17 +77,19 @@ class TritonPythonModel:
 
         for request in requests:
             images = pb_utils.get_input_tensor_by_name(request, "IMAGES").as_numpy()
-            images = [el.decode() for el in images]
-            print(images)
-            pil_image = PIL_Image.open(images[0])
+            image_base64 = images[0].decode('utf-8')
+            image_bytes = base64.b64decode(image_base64)
+            pil_image = PIL_Image.open(io.BytesIO(image_bytes))
             if pil_image.mode != 'RGB':
                 pil_image = PIL_Image.new("RGB", pil_image.size)
             preprocess_pil_image = self.transf_1(pil_image)
-            tens_image_1 = np.transpose(np.array(preprocess_pil_image), (2, 0, 1))
+            tens_image_1 = torchvision.transforms.ToTensor()(preprocess_pil_image)
             tens_image_2 = self.transf_2(tens_image_1)
+            image = tens_image_2.unsqueeze(0).to(self.device)
 
-            device = torch.device("cpu")
-            image = torch.tensor(tens_image_2, dtype=torch.float32).unsqueeze(0).to(device)
+            with open("log.txt", "w") as f:
+                f.write(self.model.device, image.device)
+
             with torch.no_grad():
                 pred, _ = self.model(enc_x=image,
                                 enc_x_num_pads=[0],

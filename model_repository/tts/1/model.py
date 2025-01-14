@@ -1,57 +1,37 @@
 import torch
-from espnet2.bin.tts_inference import Text2Speech
-from parallel_wavegan.utils import load_model
-from scipy.io.wavfile import write
-from pathlib import Path
-import numpy as np
 import triton_python_backend_utils as pb_utils
+from transformers import AutoTokenizer, AutoModelForTextToWaveform
+import io
+from scipy.io import wavfile
+import numpy as np
 
 
 class TritonPythonModel:
     def initialize(self, args):
-
-        self.fs = 22050
-
-        # Load vocoder
-        vocoder_checkpoint = "/home/fano/Downloads/parallelwavegan_male1_checkpoint/checkpoint-400000steps.pkl"
-        self.vocoder = load_model(vocoder_checkpoint).to("cuda").eval()
-        self.vocoder.remove_weight_norm()
-
-        # Load Tacotron2 model
-        config_file = "/home/fano/Downloads/kaztts_male1_tacotron2_train.loss.ave/exp/tts_train_raw_char/config.yaml"
-        model_path = "/home/fano/Downloads/kaztts_male1_tacotron2_train.loss.ave/exp/tts_train_raw_char/train.loss.ave_5best.pth"
-
-        self.text2speech = Text2Speech(
-            config_file,
-            model_path,
-            device="cuda",
-            threshold=0.5,
-            minlenratio=0.0,
-            maxlenratio=10.0,
-            use_att_constraint=True,
-            backward_window=1,
-            forward_window=3,
-        )
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.tokenizer = AutoTokenizer.from_pretrained("/assets/tts/checkpoint")
+        self.model = AutoModelForTextToWaveform.from_pretrained("/assets/tts/checkpoint").to(self.device)
 
     def execute(self, requests):
         responses = []
 
         for request in requests:
-            text_input = pb_utils.get_input_tensor_by_name(request, "TEXT").as_numpy()
-            text_input = text_input[0].decode("utf-8")
+            texts = pb_utils.get_input_tensor_by_name(request, "TEXTS").as_numpy()
+            texts = [el.decode() for el in texts][0]
 
+            inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)
             with torch.no_grad():
-                output_dict = self.text2speech(text_input.lower())
-                feat_gen = output_dict['feat_gen']
+                output = self.model(**inputs).waveform
 
-                wav = self.vocoder.inference(feat_gen)
+            # Convert the waveform tensor to a numpy array with the appropriate data type
+            output_numpy = output.squeeze().cpu().numpy().astype(np.float32)
 
-            wav_data = wav.view(-1).cpu().numpy()
+            with io.BytesIO() as wav_io:
+                wavfile.write(wav_io, rate=self.model.config.sampling_rate, data=output_numpy)
+                wav_bytes = wav_io.getvalue()
 
-            output_tensor = pb_utils.Tensor(
-                "OUTPUT_AUDIO",
-                np.array([wav_data], dtype=object)
-            )
+            # Create an output tensor
+            output_tensor = pb_utils.Tensor("OUTPUT", np.frombuffer(wav_bytes, dtype=np.uint8))
 
             inference_response = pb_utils.InferenceResponse(
                 output_tensors=[output_tensor]

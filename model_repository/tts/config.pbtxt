@@ -1,22 +1,27 @@
 name: "tts"
-platform: "python"
+backend: "python"
+
+
 input [
   {
-    name: "TEXT"
+    name: "TEXTS"
     data_type: TYPE_STRING
     dims: [1]
   }
 ]
+
 output [
   {
-    name: "OUTPUT_AUDIO"
+    name: "OUTPUT"
     data_type: TYPE_STRING
     dims: [1]
   }
 ]
+
+
 instance_group [
     {
         count: 1
-        kind: KIND_CPU
+        kind: KIND_GPU
     }
 ]
