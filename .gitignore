@@ -7,3 +7,5 @@ experiments/
 *.safetensors
 *.json
 *.txt
+*.bin
+.env

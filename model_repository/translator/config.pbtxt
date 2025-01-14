@@ -1,0 +1,39 @@
+name: "translator"
+backend: "python"
+max_batch_size: 0
+
+
+input [
+    {
+        name: "TEXTS"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    },
+    {
+        name: "LANG_TYPE"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    },
+    {
+        name: "TRG_LANG"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    }
+]
+
+output [
+    {
+        name: "OUTPUT"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    }
+]
+
+
+instance_group [
+    {
+        count: 1
+        kind: KIND_GPU
+        gpus: [ 0 ]
+    }
+]

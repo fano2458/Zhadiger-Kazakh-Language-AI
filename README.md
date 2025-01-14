@@ -4,14 +4,16 @@ This repository provides AI services for the Kazakh language, including a langua
 
 ## Models
 
-Currently, it contains only one model:
+Currently, it contains four models:
 - `kazllm`: A language model for Kazakh.
 - `ner`: Model for named enteties recognition.
 - `image_caption`: Model for caption generation for images.
+- `translator`: Model for translation from one Kazakh to English and vice versa.
 
 ## TODO List
 
-- [ ] Check image_caption model (request_test.py)
+- [ ] Check image_caption model (request_test.py).
+- [ ] Check ocr, tts, stt.
 - [ ] Convert current models to ONNX format.
 - [ ] Convert ONNX models to TensorRT engine.
 - [ ] Add more models to the repository.
@@ -35,7 +37,8 @@ Currently, it contains only one model:
     kaz_ai_triton/
     ├── assets/
     │   └── kazllm/
-    │       └── checkpoints_llama8b_031224_18900-Q4_K_M.gguf
+    │       └── checkpoint/
+    |           └── model_name.gguf
     ├── model_repository/
     ├── request_test.py
     ├── docker-compose.yaml

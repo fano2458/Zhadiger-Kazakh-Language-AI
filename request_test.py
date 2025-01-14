@@ -17,6 +17,18 @@ def get_embeddings(text, type="ner"):
                 "shape": [len(text)], 
                 "datatype": "BYTES",
                 "data": text
+            },
+            {
+                "name": "LANG_TYPE",
+                "shape": [1],
+                "datatype": "BYTES",
+                "data": ["kaz"]
+            },
+            {
+                "name": "TRG_LANG",
+                "shape": [1],
+                "datatype": "BYTES",
+                "data": ["eng_Latn"]
             }
         ]
     }
@@ -39,7 +51,7 @@ def get_embeddings(text, type="ner"):
 
 text = ["Қазақ тілін болашақта қолданамын деп ойласыз ба?  Егер қолдансаңыз,  қай салаларда? Қолданбасаңыз, не себепті қолданбайсыз?"] # Қазақстанда қанша адам тұрады? қазақстанның астанасы қандай?
 start_time = time.time()
-embeddings = get_embeddings(text, type="ner") # kazllm
+embeddings = get_embeddings(text, type="translator") # kazllm
 print(embeddings)
 print(f"Total time is {time.time() - start_time}")
 # print(len(embeddings))

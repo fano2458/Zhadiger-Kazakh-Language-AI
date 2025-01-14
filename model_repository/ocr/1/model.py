@@ -15,6 +15,7 @@ from surya.model.detection.model import load_model as load_det_model, load_proce
 from surya.model.recognition.model import load_model as load_rec_model
 from surya.model.recognition.processor import load_processor as load_rec_processor
 
+
 class TritonPythonModel:
     def initialize(self, args):
         """Load models and processors during Triton model initialization."""

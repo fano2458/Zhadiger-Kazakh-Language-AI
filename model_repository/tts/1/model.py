@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import triton_python_backend_utils as pb_utils
 
+
 class TritonPythonModel:
     def initialize(self, args):
 

@@ -82,7 +82,7 @@ class TritonPythonModel:
             tens_image_1 = np.transpose(np.array(preprocess_pil_image), (2, 0, 1))
             tens_image_2 = self.transf_2(tens_image_1)
 
-            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            device = torch.device("cpu")
             image = torch.tensor(tens_image_2, dtype=torch.float32).unsqueeze(0).to(device)
             with torch.no_grad():
                 pred, _ = self.model(enc_x=image,
