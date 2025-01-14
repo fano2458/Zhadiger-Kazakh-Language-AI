@@ -4,11 +4,11 @@ This repository provides AI services for the Kazakh language, including a langua
 
 ## Models
 
-Currently, it contains four models:
+Currently, it contains 4 models:
 - `kazllm`: A language model for Kazakh.
 - `ner`: Model for named enteties recognition.
-- `image_caption`: Model for caption generation for images.
 - `translator`: Model for translation from one Kazakh to English and vice versa.
+- `tts`: Mode that generates speech from text written on Kazakh.
 
 ## TODO List
 
