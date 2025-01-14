@@ -1,0 +1,22 @@
+name: "tts"
+platform: "python"
+input [
+  {
+    name: "TEXT"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+output [
+  {
+    name: "OUTPUT_AUDIO"
+    data_type: TYPE_STRING
+    dims: [1]
+  }
+]
+instance_group [
+    {
+        count: 1
+        kind: KIND_CPU
+    }
+]
