@@ -1,0 +1,18 @@
+Small Kazakh model trained from https://github.com/IS2AI/ISSAI_SAIDA_Kazakh_ASR
+
+Thanks to
+
+A Crowdsourced Open-Source Kazakh Speech Corpus and Initial Speech Recognition Baseline
+Yerbolat Khassanov, Saida Mussakhojayeva, Almas Mirzakhmetov, Alen Adiyev, Mukhamet Nurpeiissov, Huseyin Atakan Varol
+https://arxiv.org/abs/2009.10334
+
+See also
+
+A baseline model for computationally inexpensive speech recognition for Kazakh using the Coqui STT framework
+Ilnar Salimzianov
+https://arxiv.org/abs/2107.10637
+
+WER:
+
+%WER 9.60 [ 3388 / 35275, 451 ins, 496 del, 2441 sub ] exp/chain_a/tdnn/decode_dev_look_fast/wer_10_0.5
+%WER 8.32 [ 2987 / 35884, 482 ins, 334 del, 2171 sub ] exp/chain_a/tdnn/decode_test_look_fast/wer_10_0.0

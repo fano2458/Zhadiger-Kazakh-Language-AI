@@ -27,3 +27,5 @@ instance_group [
         gpus: [ 0 ]
     }
 ]
+
+version_policy: { latest: { num_versions: 1}}

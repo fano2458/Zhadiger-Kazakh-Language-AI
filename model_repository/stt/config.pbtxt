@@ -1,22 +1,30 @@
 name: "stt"
-platform: "python"
+backend: "python"
+max_batch_size: 0
+
+
 input [
   {
     name: "AUDIO"
-    data_type: TYPE_FP32
+    data_type: TYPE_STRING
     dims: [-1]
   }
 ]
+
 output [
   {
-    name: "TRANSCRIPTION"
+    name: "OUTPUT"
     data_type: TYPE_STRING
-    dims: [1]
+    dims: [-1]
   }
 ]
+
+
 instance_group [
     {
         count: 1
         kind: KIND_CPU
     }
 ]
+
+version_policy: { latest: { num_versions: 1}}

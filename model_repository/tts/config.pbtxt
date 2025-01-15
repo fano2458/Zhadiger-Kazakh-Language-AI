@@ -1,12 +1,13 @@
 name: "tts"
 backend: "python"
+max_batch_size: 0
 
 
 input [
   {
     name: "TEXTS"
     data_type: TYPE_STRING
-    dims: [1]
+    dims: [-1]
   }
 ]
 
@@ -14,7 +15,7 @@ output [
   {
     name: "OUTPUT"
     data_type: TYPE_STRING
-    dims: [1]
+    dims: [-1]
   }
 ]
 
@@ -25,3 +26,5 @@ instance_group [
         kind: KIND_GPU
     }
 ]
+
+version_policy: { latest: { num_versions: 1}}

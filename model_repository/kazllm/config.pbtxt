@@ -26,3 +26,5 @@ instance_group [
         kind: KIND_CPU
     }
 ]
+
+version_policy: { latest: { num_versions: 1}}

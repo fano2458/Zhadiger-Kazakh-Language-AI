@@ -4,23 +4,29 @@ This repository provides AI services for the Kazakh language, including a langua
 
 ## Models
 
-Currently, it contains 6 models:
+Currently, it contains 7 models:
 - `kazllm`: A language model for Kazakh.
 - `ner`: Model for named enteties recognition.
 - `translator`: Model for translation from one Kazakh to English and vice versa.
 - `tts`: Model that generates speech from text written on Kazakh.
 - `ocr`: Model that does optical character recognition on an image.
 - `image_caption`: Model that generates short description for a given image.
+- `stt`: Model that generates text from a given speech recording.
 
 ## TODO List
 
-- [ ] Check stt.
 - [ ] Add text summarization.
 - [ ] Add question answering.
 - [ ] Add image generator (text to image).
 - [ ] Add vqa model (visual question answering).
 - [ ] Convert current models to ONNX format.
 - [ ] Convert ONNX models to TensorRT engine.
+- [ ] Warm up for some of the models.
+- [ ] Response Cache for some of the models.
+- [ ] Measure performance by performance analyzer (try out concurrent model execution) [link](https://github.com/triton-inference-server/tutorials/tree/main/Conceptual_Guide/Part_2-improving_resource_utilization)
+- [ ] Customization of deployment with Model analyzer [link](https://github.com/triton-inference-server/tutorials/tree/main/Conceptual_Guide/Part_3-optimizing_triton_configuration)
+- [ ] Accelerate model inference [link](https://github.com/triton-inference-server/tutorials/tree/main/Conceptual_Guide/Part_4-inference_acceleration)
+- [ ] Create pipelines with ensembles [link](https://github.com/triton-inference-server/tutorials/tree/main/Conceptual_Guide/Part_5-Model_Ensembles) and BLS [link](https://github.com/triton-inference-server/tutorials/tree/main/Conceptual_Guide/Part_6-building_complex_pipelines)
 
 ## Getting Started
 

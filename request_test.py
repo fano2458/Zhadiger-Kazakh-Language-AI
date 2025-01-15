@@ -49,6 +49,17 @@ def get_embeddings(data, type="ner"):
                 }
             ]
         }
+    elif type == "stt":
+        payload = {
+            "inputs": [
+                {
+                    "name": "AUDIO",
+                    "shape": [1],
+                    "datatype": "BYTES",
+                    "data": [base64.b64encode(data).decode('utf-8')]
+                }
+            ]
+        }
     else:
         payload = {
             "inputs": [
@@ -74,7 +85,8 @@ def get_embeddings(data, type="ner"):
             with io.BytesIO(response_result) as wav_io:
                 rate, data = wavfile.read(wav_io)
                 return rate, data
-        elif type == "image_caption" or type == 'ocr':
+        elif type == "image_caption" or type == 'ocr' or type == 'stt':
+            print(response_data)
             return response_result[0]
 
         return response_result
@@ -91,11 +103,21 @@ result = get_embeddings(text, type="tts") # kazllm
 wavfile.write("output.wav", result[0], result[1])
 print(f"Total time is {time.time() - start_time}")
 
-# Example usage for image captioning
-with open("image8.jpg", "rb") as image_file:
-    image_bytes = image_file.read()
+# # Example usage for image captioning
+# with open("image8.jpg", "rb") as image_file:
+#     image_bytes = image_file.read()
+
+# start_time = time.time()
+# result = get_embeddings(image_bytes, type="ocr")
+# print(f"Caption: {result}")
+# print(f"Total time is {time.time() - start_time}")
+
+
+# Example usage for Speech to Text
+with open("test.wav", "rb") as audio_file:
+    audio_bytes = audio_file.read()
 
 start_time = time.time()
-result = get_embeddings(image_bytes, type="ocr")
-print(f"Caption: {result}")
+result = get_embeddings(audio_bytes, type="stt")
+print(f"Text: {result}")
 print(f"Total time is {time.time() - start_time}")
