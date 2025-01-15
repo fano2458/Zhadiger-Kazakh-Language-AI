@@ -1,15 +1,9 @@
-model_exports/
 __pycache__/
-experiments/
+
 *.gguf
 *.pth
-*.pickle
 *.safetensors
-*.json
-*.txt
 *.bin
-.env
-*.npz
-checkpoint/
+
 *.jpg
 *.wav

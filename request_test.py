@@ -14,7 +14,7 @@ def get_embeddings(data, type="ner"):
         "Content-Type": "application/json"
     }
     
-    if type == "image_caption":
+    if type == "image_caption" or type == 'ocr':
         encoded_data = base64.b64encode(data).decode('utf-8')
         payload = {
             "inputs": [
@@ -74,7 +74,7 @@ def get_embeddings(data, type="ner"):
             with io.BytesIO(response_result) as wav_io:
                 rate, data = wavfile.read(wav_io)
                 return rate, data
-        elif type == "image_caption":
+        elif type == "image_caption" or type == 'ocr':
             return response_result[0]
 
         return response_result
@@ -96,6 +96,6 @@ with open("image8.jpg", "rb") as image_file:
     image_bytes = image_file.read()
 
 start_time = time.time()
-result = get_embeddings(image_bytes, type="image_caption")
+result = get_embeddings(image_bytes, type="ocr")
 print(f"Caption: {result}")
 print(f"Total time is {time.time() - start_time}")

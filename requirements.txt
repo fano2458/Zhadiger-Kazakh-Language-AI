@@ -1,6 +1,0 @@
-llama-cpp-python
-transformers
-torch
-torchvision
-pillow
-surya-ocr

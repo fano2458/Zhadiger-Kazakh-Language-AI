@@ -35,6 +35,7 @@ class TritonPythonModel:
             self.coco_tokens = pickle.load(f)
 
         img_size = 384
+        self.device = torch.device("cpu")
         self.model = End_ExpansionNet_v2(swin_img_size=img_size, swin_patch_size=4, swin_in_chans=3,
                                         swin_embed_dim=192, swin_depths=[2, 2, 18, 2], swin_num_heads=[6, 12, 24, 48],
                                         swin_window_size=12, swin_mlp_ratio=4., swin_qkv_bias=True, swin_qk_scale=None,
@@ -50,18 +51,17 @@ class TritonPythonModel:
                                         output_word2idx=self.coco_tokens['word2idx_dict'],
                                         output_idx2word=self.coco_tokens['idx2word_list'],
                                         max_seq_len=63, drop_args=model_args.drop_args,
-                                        rank=0)
-        
-        self.device = torch.device("cpu")
+                                        rank=self.device)
 
-        checkpoint = torch.load(load_path, map_location=self.device)
-        self.model.load_state_dict(checkpoint['model_state_dict'])
         self.model.to(self.device)
+
+        checkpoint = torch.load(load_path, map_location=self.device, weights_only=True)
+        self.model.load_state_dict(checkpoint['model_state_dict'])
+        self.model.eval()
 
         self.transf_1 = torchvision.transforms.Compose([torchvision.transforms.Resize((img_size, img_size))])
         self.transf_2 = torchvision.transforms.Compose([torchvision.transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                                                         std=[0.229, 0.224, 0.225])])
-        self.model.eval()
 
         """### Beam search configuration"""
 
@@ -87,8 +87,8 @@ class TritonPythonModel:
             tens_image_2 = self.transf_2(tens_image_1)
             image = tens_image_2.unsqueeze(0).to(self.device)
 
-            with open("log.txt", "w") as f:
-                f.write(self.model.device, image.device)
+            # with open("/assets/image_caption/log.txt", "w") as f:
+            #     f.write(f"{next(self.model.parameters()).device}\n{image.device}")
 
             with torch.no_grad():
                 pred, _ = self.model(enc_x=image,
