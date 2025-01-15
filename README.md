@@ -36,20 +36,7 @@ Currently, it contains 6 models:
     cd kaz_ai_triton
     ```
 
-2. Download the weights of the models and place them into the `assets` folder. Ensure the folder structure is as follows:
-    ```
-    kaz_ai_triton/
-    ├── assets/
-    │   └── kazllm/
-    │       └── checkpoint/
-    |           └── model_name.format
-    ├── model_repository/
-    ├── request_test.py
-    ├── docker-compose.yaml
-    └── ...
-    ```
-
-3. Build and start the Docker containers:
+2. Build and start the Docker containers:
     ```sh
     docker-compose up --build
     ```
