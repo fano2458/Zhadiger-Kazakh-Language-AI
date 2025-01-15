@@ -15,9 +15,9 @@ RUN pip3 install surya-ocr
 RUN pip3 install scipy==1.10.1
 RUN pip3 install vosk==0.3.45
 
-COPY download_models.sh .
-RUN chmod +x download_models.sh
-RUN ./download_models.sh
+# COPY download_models.sh .
+# RUN chmod +x download_models.sh
+# RUN ./download_models.sh
 
 # COPY requirements.txt .
 # RUN pip3 install -r requirements.txt

@@ -42,7 +42,13 @@ Currently, it contains 7 models:
     cd kaz_ai_triton
     ```
 
-2. Build and start the Docker containers:
+2. Download the models:
+    ```sh
+    chmod +x download_models.sh
+    ./download_models.sh    
+    ```
+
+3. Build and start the Docker containers:
     ```sh
     docker-compose up --build
     ```
