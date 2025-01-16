@@ -15,6 +15,8 @@ RUN pip3 install surya-ocr
 RUN pip3 install scipy==1.10.1
 RUN pip3 install vosk==0.3.45
 RUN pip3 install onnxruntime-gpu==1.19.0
+RUN pip3 install tensorrt==8.6.1
+RUN pip3 install pycuda
 
 # COPY download_models.sh .
 # RUN chmod +x download_models.sh

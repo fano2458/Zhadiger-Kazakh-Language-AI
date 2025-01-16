@@ -5,6 +5,7 @@ __pycache__/
 *.safetensors
 *.bin
 *.onnx
+*.trt
 
 *.jpg
 *.wav
