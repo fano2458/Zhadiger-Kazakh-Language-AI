@@ -4,6 +4,7 @@ __pycache__/
 *.pth
 *.safetensors
 *.bin
+*.onnx
 
 *.jpg
 *.wav

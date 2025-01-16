@@ -96,28 +96,28 @@ def get_embeddings(data, type="ner"):
         return None
 
 # Example usage for TTS
-text = ["Қазақ тілін болашақта қолданамын деп ойласыз ба?  Егер қолдансаңыз,  қай салаларда? Қолданбасаңыз, не себепті қолданбайсыз?"] # Қазақстанда қанша адам тұрады? қазақстанның астанасы қандай?
-start_time = time.time()
-result = get_embeddings(text, type="tts") # kazllm
+# text = ["Қазақ тілін болашақта қолданамын деп ойласыз ба?  Егер қолдансаңыз,  қай салаларда? Қолданбасаңыз, не себепті қолданбайсыз?"] # Қазақстанда қанша адам тұрады? қазақстанның астанасы қандай?
+# start_time = time.time()
+# result = get_embeddings(text, type="tts") # kazllm
 
-wavfile.write("output.wav", result[0], result[1])
-print(f"Total time is {time.time() - start_time}")
+# wavfile.write("output.wav", result[0], result[1])
+# print(f"Total time is {time.time() - start_time}")
 
 # # Example usage for image captioning
-# with open("image8.jpg", "rb") as image_file:
-#     image_bytes = image_file.read()
+with open("image8.jpg", "rb") as image_file:
+    image_bytes = image_file.read()
 
-# start_time = time.time()
-# result = get_embeddings(image_bytes, type="ocr")
-# print(f"Caption: {result}")
-# print(f"Total time is {time.time() - start_time}")
+start_time = time.time()
+result = get_embeddings(image_bytes, type="image_caption")
+print(f"Caption: {result}")
+print(f"Total time is {time.time() - start_time}")
 
 
 # Example usage for Speech to Text
-with open("test.wav", "rb") as audio_file:
-    audio_bytes = audio_file.read()
+# with open("test.wav", "rb") as audio_file:
+#     audio_bytes = audio_file.read()
 
-start_time = time.time()
-result = get_embeddings(audio_bytes, type="stt")
-print(f"Text: {result}")
-print(f"Total time is {time.time() - start_time}")
+# start_time = time.time()
+# result = get_embeddings(audio_bytes, type="stt")
+# print(f"Text: {result}")
+# print(f"Total time is {time.time() - start_time}")

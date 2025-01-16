@@ -14,6 +14,7 @@ RUN pip3 install pillow==10.4.0
 RUN pip3 install surya-ocr
 RUN pip3 install scipy==1.10.1
 RUN pip3 install vosk==0.3.45
+RUN pip3 install onnxruntime-gpu==1.19.0
 
 # COPY download_models.sh .
 # RUN chmod +x download_models.sh
