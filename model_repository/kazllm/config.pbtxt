@@ -13,6 +13,11 @@ input [
         name: "TASK"
         data_type: TYPE_STRING
         dims: [ -1 ]
+    },
+    {
+        name: "QUESTION"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
     }
 ]
 

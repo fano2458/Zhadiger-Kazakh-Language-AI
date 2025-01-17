@@ -17,12 +17,18 @@ class TritonPythonModel:
             task = pb_utils.get_input_tensor_by_name(request, "TASK").as_numpy()
             task = [el.decode() for el in task][0]
 
+            question = pb_utils.get_input_tensor_by_name(request, "QUESTION").as_numpy()
+            question = [el.decode() for el in question][0]
+
             instruction = ""
             role = ""
 
             if task == "summarization":
                 instruction = "Келесі мәтіннің қысқаша мазмұнын беріңіз\n"
                 role = "мәтінді қысқаратын"
+            elif task == "qa":
+                instruction = "Келесі мәтін мазмұнын бойынша келесі сұраққа жауап беріңіз\n"
+                role = "сұраққа жауап беретін"
 
             prompt = [
                 {
@@ -39,7 +45,7 @@ class TritonPythonModel:
                 },
                 {
                     "role": "user",
-                    "content": instruction + texts,
+                    "content": instruction + texts + '\n' + question,
                 },
             ]
             max_tokens = 2048

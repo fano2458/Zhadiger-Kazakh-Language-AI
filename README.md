@@ -5,7 +5,7 @@ This repository provides AI services for the Kazakh language, including a langua
 ## Models
 
 Currently, it contains 7 models:
-- `kazllm`: A language model for Kazakh.
+- `kazllm`: A language model for Kazakh, capable of chatting, answering questions, and text summarization.
 - `ner`: Model for named enteties recognition.
 - `translator`: Model for translation from one Kazakh to English and vice versa.
 - `tts`: Model that generates speech from text written on Kazakh.
@@ -15,10 +15,9 @@ Currently, it contains 7 models:
 
 ## TODO List
 
-- [ ] Add text summarization.
-- [ ] Add question answering.
 - [ ] Add image generator (text to image).
 - [ ] Add vqa model (visual question answering).
+- [ ] Add KazLLM output streaming.
 - [ ] Convert current models to ONNX format.
 - [ ] Convert ONNX models to TensorRT engine.
 - [ ] Warm up for some of the models.
