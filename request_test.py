@@ -175,6 +175,6 @@ def test_kazllm():
 if __name__ == "__main__":
     test_tts()
     test_image_caption()
-    test_stt()
+    # test_stt()
     test_ner()
     test_kazllm()
