@@ -34,7 +34,7 @@ class TritonPythonModel:
             tokenized_inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)
             with torch.no_grad():
                 output = self.model(**tokenized_inputs)
-            predictions = np.argmax(output.logits.detach().numpy(), axis=2)
+            predictions = np.argmax(output.logits.detach().cpu().numpy(), axis=2)
 
             word_ids = tokenized_inputs.word_ids(batch_index=0)
             previous_word_idx = None
