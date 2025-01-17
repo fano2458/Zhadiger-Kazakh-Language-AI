@@ -17,6 +17,7 @@ RUN pip3 install vosk==0.3.45
 RUN pip3 install onnxruntime-gpu==1.19.0
 RUN pip3 install tensorrt==8.6.1
 RUN pip3 install pycuda
+# RUN CMAKE_ARGS="-DGGML_CUDA=on" pip3 install llama-cpp-python
 
 # COPY download_models.sh .
 # RUN chmod +x download_models.sh

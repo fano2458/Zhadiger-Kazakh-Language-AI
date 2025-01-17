@@ -7,7 +7,7 @@ import numpy as np
 import base64
 
 
-def get_embeddings(data, type="ner"):
+def get_embeddings(data, type="ner", role=None):
     url = f"http://localhost:8500/v2/models/{type}/infer"
     
     headers = {
@@ -60,14 +60,20 @@ def get_embeddings(data, type="ner"):
                 }
             ]
         }
-    else:
+    elif type == "kazllm":
         payload = {
             "inputs": [
                 {
-                    "name": "TEXTS",  
-                    "shape": [len(data)], 
+                    "name": "TEXTS",
+                    "shape": [1],
                     "datatype": "BYTES",
                     "data": data
+                },
+                {
+                    "name": "TASK",
+                    "shape": [1],
+                    "datatype": "BYTES",
+                    "data": [role]
                 }
             ]
         }
@@ -104,13 +110,13 @@ def get_embeddings(data, type="ner"):
 # print(f"Total time is {time.time() - start_time}")
 
 # # Example usage for image captioning
-with open("image8.jpg", "rb") as image_file:
-    image_bytes = image_file.read()
+# with open("image8.jpg", "rb") as image_file:
+#     image_bytes = image_file.read()
 
-start_time = time.time()
-result = get_embeddings(image_bytes, type="image_caption")
-print(f"Caption: {result}")
-print(f"Total time is {time.time() - start_time}")
+# start_time = time.time()
+# result = get_embeddings(image_bytes, type="image_caption")
+# print(f"Caption: {result}")
+# print(f"Total time is {time.time() - start_time}")
 
 
 # Example usage for Speech to Text
@@ -121,3 +127,18 @@ print(f"Total time is {time.time() - start_time}")
 # result = get_embeddings(audio_bytes, type="stt")
 # print(f"Text: {result}")
 # print(f"Total time is {time.time() - start_time}")
+
+# Example usage for text summarization 
+text = ["Қазақстан Республикасы (Дыбысы Қазақстан Республикасы) — Шығыс Еуропа мен Орталық Азияда орналасқан мемлекет. "
+        "Батысында Еділдің төменгі ағысынан, шығысында Алтай тауларына дейін 3 000 километрге, солтүстіктегі Батыс Сібір жазығынан, оңтүстіктегі "
+        "Қызылқұм шөлі мен Тянь-Шань тау жүйесіне 1 600 километрге созылып жатыр. Қазақстан Каспий көлі арқылы Әзербайжан, Иран елдеріне, "
+        "Еділ өзені және Еділ-Дон каналы арқылы Азов теңізі мен Қара теңізге шыға алады. Мұхитқа тікелей шыға алмайтын мемлекеттердің ішінде Қазақстан — ең үлкені."
+        "Қазақстан бес мемлекетпен шекаралас, соның ішінде әлемдегі құрлықтағы ең ұзын шекара, солтүстігінде және батысында Ресеймен — 7 591 км құрайды. "
+        "Оңтүстігінде: Түрікменстан — 426 км, Өзбекстан — 2 354 км және Қырғызстан — 1 241 км, ал шығысында: Қытаймен — 1 782 км шектеседі. "
+        "Жалпы құрлық шекарасының ұзындығы — 13 394 километр. Батыста Каспий көлімен (2000 км), оңтүстік батыста Арал теңізімен шайылады.[8] "
+        "2024 жылғы 1 наурыздағы елдегі тұрғындар саны — 20 075 271,[3] бұл әлем бойынша 64-орын. Жер көлемі жағынан әлем елдерінің ішінде 9-орын алады (2 724 902 км²)"]
+
+start_time = time.time()
+result = get_embeddings(text, type="kazllm", role="summarization")
+print(f"Summary: {result}")
+print(f"Total time is {time.time() - start_time}")

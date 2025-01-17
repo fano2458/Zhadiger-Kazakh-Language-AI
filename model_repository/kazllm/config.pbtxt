@@ -8,6 +8,11 @@ input [
         name: "TEXTS"
         data_type: TYPE_STRING
         dims: [ -1 ]
+    },
+    {
+        name: "TASK"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
     }
 ]
 
@@ -23,7 +28,8 @@ output [
 instance_group [
     {
         count: 1
-        kind: KIND_CPU
+        kind: KIND_GPU
+        gpus: [ 0 ]
     }
 ]
 
