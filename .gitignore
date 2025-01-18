@@ -7,7 +7,5 @@ __pycache__/
 *.onnx
 *.trt
 
-stt/
-
 *.jpg
 *.wav
