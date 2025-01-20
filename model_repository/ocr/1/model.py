@@ -14,43 +14,51 @@ from surya.model.recognition.processor import load_processor as load_rec_process
 
 class TritonPythonModel:
     def initialize(self, args):
-        """Load models and processors during Triton model initialization."""
+        self.load_models_and_processors()
+
+    def load_models_and_processors(self):
         self.langs = ["kk", "ru", "en"]
         self.det_processor, self.det_model = load_det_processor(), load_det_model()
         self.rec_model, self.rec_processor = load_rec_model(), load_rec_processor()
 
+    def preprocess_image(self, image_base64):
+        image_bytes = base64.b64decode(image_base64)
+        image_stream = BytesIO(image_bytes)
+        image = PIL_Image.open(image_stream)
+        if image.mode != 'RGB':
+            image = image.convert("RGB")
+        return image
+
+    def predict(self, image):
+        predictions = run_ocr(
+            [image], [self.langs], 
+            self.det_model, self.det_processor, 
+            self.rec_model, self.rec_processor
+        )
+        return predictions
+
+    def format_predictions(self, predictions):
+        formatted_text = ""
+        for result in predictions:
+            text_lines = result.text_lines
+            for line in text_lines:
+                if line.confidence >= 0.50:
+                    formatted_text += line.text + "\n"
+        return formatted_text
+
     def execute(self, requests):
-        """Execute inference on input requests."""
         responses = []
 
         for request in requests:
             base64_images = pb_utils.get_input_tensor_by_name(request, "IMAGES").as_numpy()
             image_base64 = base64_images[0].decode('utf-8')
-            image_bytes = base64.b64decode(image_base64)
- 
-            image_stream = BytesIO(image_bytes)
-            image = PIL_Image.open(image_stream)
+            image = self.preprocess_image(image_base64)
+            predictions = self.predict(image)
+            formatted_text = self.format_predictions(predictions)
 
-            if image.mode != 'RGB':
-                image = image.convert("RGB")
-
-            predictions = run_ocr(
-                [image], [self.langs], 
-                self.det_model, self.det_processor, 
-                self.rec_model, self.rec_processor
-            )
-
-            formatted_text = ""
-            for result in predictions:
-                text_lines = result.text_lines
-                for line in text_lines:
-                    if line.confidence >= 0.50:  
-                        formatted_text += line.text + "\n"
-
-            output_tensor = pb_utils.Tensor(
-                "OUTPUT", 
-                np.array([formatted_text], dtype=np.object_)
-            )
-            responses.append(pb_utils.InferenceResponse(output_tensors=[output_tensor]))
+            output_tensor = pb_utils.Tensor("OUTPUT", np.array([formatted_text], dtype=np.object_))
+            inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
+            responses.append(inference_response)
 
         return responses
+    
