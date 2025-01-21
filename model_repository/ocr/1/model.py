@@ -1,4 +1,5 @@
 import base64
+import torch
 import numpy as np
 import triton_python_backend_utils as pb_utils
 from PIL import Image as PIL_Image
@@ -18,8 +19,8 @@ class TritonPythonModel:
 
     def load_models_and_processors(self):
         self.langs = ["kk", "ru", "en"]
-        self.det_processor, self.det_model = load_det_processor(), load_det_model()
-        self.rec_model, self.rec_processor = load_rec_model(), load_rec_processor()
+        self.det_processor, self.det_model = load_det_processor(), load_det_model(device="cpu", dtype=torch.float32)
+        self.rec_model, self.rec_processor = load_rec_model(device='cpu', dtype=torch.float32), load_rec_processor()
 
     def preprocess_image(self, image_base64):
         image_bytes = base64.b64decode(image_base64)

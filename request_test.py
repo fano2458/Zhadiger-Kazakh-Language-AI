@@ -139,6 +139,16 @@ def test_image_caption():
     print(f"Total time is {time.time() - start_time}")
 
 
+def test_ocr():
+    with open("image8.jpg", "rb") as image_file:
+        image_bytes = image_file.read()
+
+    start_time = time.time()
+    result = get_response(image_bytes, type="ocr")
+    print(f"Caption: {result}")
+    print(f"Total time is {time.time() - start_time}")
+
+
 def test_stt():
     with open("test.wav", "rb") as audio_file:
         audio_bytes = audio_file.read()
@@ -173,8 +183,13 @@ def test_kazllm():
 
 
 if __name__ == "__main__":
+    print("tts time: ")
     test_tts()
+    print("image caption time: ")
     test_image_caption()
     # test_stt()
+    print("ner time: ")
     test_ner()
-    test_kazllm()
+    # test_kazllm()
+    print("ocr time: ")
+    test_ocr()
