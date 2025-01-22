@@ -81,7 +81,7 @@ def get_payload(data, type, role="", question=""):
         payload = {
             "inputs": [
                 {
-                    "name": "TEXTS",
+                    "name": "texts",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": data
@@ -102,8 +102,11 @@ def get_response(data, type, role="", question=""):
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
+    print(response.json())
+
     if response.status_code == 200:
         response_data = response.json()
+
         response_result = response_data['outputs'][0]['data']
 
         if type == "ner":
@@ -160,7 +163,8 @@ def test_stt():
 
 
 def test_ner():
-    text = ["Қазақстан Республикасының астанасы - Астана."]
+    # text = ["Қазақстан Республикасының астанасы - Астана."]
+    text = ["Сен қай жерде боласын?"]
     start_time = time.time()
     result = get_response(text, type="ner")
     print(f"NER: {result}")
@@ -183,13 +187,13 @@ def test_kazllm():
 
 
 if __name__ == "__main__":
-    print("tts time: ")
-    test_tts()
-    print("image caption time: ")
-    test_image_caption()
+    # print("tts time: ")
+    # test_tts()
+    # print("image caption time: ")
+    # test_image_caption()
     # test_stt()
     print("ner time: ")
     test_ner()
     # test_kazllm()
-    print("ocr time: ")
-    test_ocr()
+    # print("ocr time: ")
+    # test_ocr()

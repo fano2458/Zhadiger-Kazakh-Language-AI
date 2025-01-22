@@ -55,7 +55,7 @@ class TritonPythonModel:
             previous_word_idx = i
 
         input_sent_tokens = re.findall(r"[\w’-]+|[.,#?!)(\]\[;:–—\"«№»/%&']", texts)
-        assert len(input_sent_tokens) == len(labels), "Mismatch between input token and label sizes!"
+        assert len(input_sent_tokens) == len(labels), f"Mismatch between input token and label sizes! {len(input_sent_tokens), len(labels)}, input: {input_sent_tokens}labels: {labels}"
         result_dict = {}
         words = []
         classes = []
@@ -73,14 +73,14 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            texts = pb_utils.get_input_tensor_by_name(request, "TEXTS").as_numpy()
+            texts = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
             texts = [el.decode() for el in texts][0]
 
             tokenized_inputs = self.preprocess_text(texts)
             predictions = self.predict(tokenized_inputs)
             result = self.postprocess_predictions(texts, tokenized_inputs, predictions)
 
-            output_tensor = pb_utils.Tensor("OUTPUT", np.array(result, dtype=np.object_))
+            output_tensor = pb_utils.Tensor("output", np.array(result, dtype=np.object_))
             inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
             responses.append(inference_response)
 

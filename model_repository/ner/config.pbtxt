@@ -5,7 +5,7 @@ max_batch_size: 0
 
 input [
     {
-        name: "TEXTS"
+        name: "texts"
         data_type: TYPE_STRING
         dims: [ -1 ]
     }
@@ -13,7 +13,7 @@ input [
 
 output [
     {
-        name: "OUTPUT"
+        name: "output"
         data_type: TYPE_STRING
         dims: [ -1 ]
     }
