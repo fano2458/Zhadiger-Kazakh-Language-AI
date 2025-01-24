@@ -13,7 +13,7 @@ def get_payload(data, type, role="", question=""):
         payload = {
             "inputs": [
                 {
-                    "name": "IMAGES",
+                    "name": "images",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": [encoded_data]
@@ -24,19 +24,19 @@ def get_payload(data, type, role="", question=""):
         payload = {
             "inputs": [
                 {
-                    "name": "TEXTS",
+                    "name": "texts",
                     "shape": [len(data)],
                     "datatype": "BYTES",
                     "data": data
                 },
                 {
-                    "name": "LANG_TYPE",
+                    "name": "lang_type",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": data
                 },
                 {
-                    "name": "TRG_LANG",
+                    "name": "trt_lang",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": data
@@ -47,7 +47,7 @@ def get_payload(data, type, role="", question=""):
         payload = {
             "inputs": [
                 {
-                    "name": "AUDIO",
+                    "name": "audio",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": [base64.b64encode(data).decode('utf-8')]
@@ -58,19 +58,19 @@ def get_payload(data, type, role="", question=""):
         payload = {
             "inputs": [
                 {
-                    "name": "TEXTS",
+                    "name": "texts",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": data
                 },
                 {
-                    "name": "TASK",
+                    "name": "task",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": [role]
                 },
                 {
-                    "name": "QUESTION",
+                    "name": "question",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": [question]

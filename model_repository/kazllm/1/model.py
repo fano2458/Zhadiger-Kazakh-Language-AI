@@ -12,13 +12,13 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            texts = pb_utils.get_input_tensor_by_name(request, "TEXTS").as_numpy()
+            texts = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
             texts = [el.decode() for el in texts][0]
 
-            task = pb_utils.get_input_tensor_by_name(request, "TASK").as_numpy()
+            task = pb_utils.get_input_tensor_by_name(request, "task").as_numpy()
             task = [el.decode() for el in task][0]
 
-            question = pb_utils.get_input_tensor_by_name(request, "QUESTION").as_numpy()
+            question = pb_utils.get_input_tensor_by_name(request, "question").as_numpy()
             question = [el.decode() for el in question][0]
 
             instruction = ""
@@ -71,14 +71,14 @@ class TritonPythonModel:
                         partial_text = delta['content']
                         full_text_chunks.append(partial_text)
                         out_output = pb_utils.Tensor(
-                            "OUTPUT", np.array([partial_text], dtype=np.object_)
+                            "output", np.array([partial_text], dtype=np.object_)
                         )
                         response_sender.send(
                             pb_utils.InferenceResponse(output_tensors=[out_output])
                         )
                 final_text = "".join(full_text_chunks)
                 output_tensor = pb_utils.Tensor(
-                    "OUTPUT", np.array(final_text, dtype=np.object_)
+                    "output", np.array(final_text, dtype=np.object_)
                 )
                 final_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
                 response_sender.send(

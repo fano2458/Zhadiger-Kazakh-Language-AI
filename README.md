@@ -17,7 +17,6 @@ Currently, it contains 7 models:
 
 - [ ] Add image generator (text to image).
 - [ ] Add vqa model (visual question answering).
-- [ ] Add KazLLM output streaming.
 - [ ] Convert current models to ONNX format.
 - [ ] Convert ONNX models to TensorRT engine.
 - [ ] Warm up for some of the models.

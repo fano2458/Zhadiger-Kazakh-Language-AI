@@ -35,14 +35,14 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            texts = pb_utils.get_input_tensor_by_name(request, "TEXTS").as_numpy()
+            texts = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
             texts = [el.decode() for el in texts][0]
 
             inputs = self.preprocess_text(texts)
             waveform = self.generate_waveform(inputs)
             wav_bytes = self.postprocess_waveform(waveform)
 
-            output_tensor = pb_utils.Tensor("OUTPUT", np.frombuffer(wav_bytes, dtype=np.uint8))
+            output_tensor = pb_utils.Tensor("output", np.frombuffer(wav_bytes, dtype=np.uint8))
             inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
             responses.append(inference_response)
 

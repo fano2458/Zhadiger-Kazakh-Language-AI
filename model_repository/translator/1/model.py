@@ -26,11 +26,11 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            texts = pb_utils.get_input_tensor_by_name(request, "TEXTS").as_numpy()
+            texts = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
             texts = [el.decode() for el in texts][0]
 
-            lang_type = pb_utils.get_input_tensor_by_name(request, "LANG_TYPE").as_numpy()
-            trg_lang = pb_utils.get_input_tensor_by_name(request, "TRG_LANG").as_numpy()
+            lang_type = pb_utils.get_input_tensor_by_name(request, "lang_type").as_numpy()
+            trg_lang = pb_utils.get_input_tensor_by_name(request, "trt_lang").as_numpy()
 
             lang_type = [el.decode() for el in lang_type][0]
             trg_lang = [el.decode() for el in trg_lang][0]
@@ -38,7 +38,7 @@ class TritonPythonModel:
             tokenized_inputs, tokenizer = self.preprocess_text(texts, lang_type)
             translated_sentence = self.translate(tokenized_inputs, tokenizer, trg_lang)
 
-            output_tensor = pb_utils.Tensor("OUTPUT", np.array([translated_sentence], dtype=np.object_))
+            output_tensor = pb_utils.Tensor("output", np.array([translated_sentence], dtype=np.object_))
             inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
             responses.append(inference_response)
 

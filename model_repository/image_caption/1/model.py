@@ -78,7 +78,7 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            images = pb_utils.get_input_tensor_by_name(request, "IMAGES").as_numpy()
+            images = pb_utils.get_input_tensor_by_name(request, "images").as_numpy()
             image_base64 = images[0].decode('utf-8')
             image = self.preprocess_image(image_base64)
 
@@ -88,7 +88,7 @@ class TritonPythonModel:
             pred[-1] = pred[-1] + '.'
             pred = ' '.join(pred).capitalize()
 
-            output_tensor = pb_utils.Tensor("OUTPUT", np.array([pred], dtype=np.object_))
+            output_tensor = pb_utils.Tensor("output", np.array([pred], dtype=np.object_))
             inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
             responses.append(inference_response)
 

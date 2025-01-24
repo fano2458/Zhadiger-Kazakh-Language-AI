@@ -80,7 +80,7 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            images = pb_utils.get_input_tensor_by_name(request, "IMAGES").as_numpy()
+            images = pb_utils.get_input_tensor_by_name(request, "images").as_numpy()
             image_base64 = images[0].decode('utf-8')
             image = self.preprocess_image(image_base64)
 
@@ -91,7 +91,7 @@ class TritonPythonModel:
             outputs_ort = self.ort_session.run(None, input_dict_1)
             output_caption = tokens2description(outputs_ort[0][0].tolist(), self.coco_tokens['idx2word_list'], self.sos_idx, self.eos_idx)
         
-            output_tensor = pb_utils.Tensor("OUTPUT", np.array([output_caption], dtype=np.object_))
+            output_tensor = pb_utils.Tensor("output", np.array([output_caption], dtype=np.object_))
 
             inference_response = pb_utils.InferenceResponse(
                 output_tensors=[output_tensor]
