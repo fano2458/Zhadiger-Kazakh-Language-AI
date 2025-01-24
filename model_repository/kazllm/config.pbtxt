@@ -2,6 +2,9 @@ name: "kazllm"
 backend: "python"
 max_batch_size: 0
 
+model_transaction_policy {
+  decoupled: True
+}
 
 input [
     {

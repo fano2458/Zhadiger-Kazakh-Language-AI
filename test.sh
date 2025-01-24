@@ -1,0 +1,1 @@
+curl -X POST http://localhost:8500/v2/models/kazllm/generate_stream -d '{"TEXTS": "What is machine learning?", "TASK":"", "QUESTION": ""}'
