@@ -108,8 +108,12 @@ class TritonPythonModel:
             image = self.preprocess_image(image_base64)
 
             self.inputs[0]['host'] = np.ravel(image.numpy()).astype(np.float32)
-            self.inputs[1]['host'] = np.array([0]).astype(np.int32)
-            self.inputs[2]['host'] = np.array([self.sos_idx]).astype(np.int32)
+            self.inputs[1]['host'] = np.ravel(np.array(self.sos_idx)).astype(np.int32)
+            self.inputs[2]['host'] = np.ravel(self.enc_mask.numpy()).astype(np.int32)
+            self.inputs[3]['host'] = np.ravel(self.fw_dec_mask.numpy()).astype(np.float32)
+            self.inputs[4]['host'] = np.ravel(self.bw_dec_mask.numpy()).astype(np.float32)
+            self.inputs[5]['host'] = np.ravel(self.atten_mask.numpy()).astype(np.int32)
+            
             # transfer data to the gpu
             for inp in self.inputs:
                 cuda.memcpy_htod_async(inp['device'], inp['host'], self.stream)

@@ -17,6 +17,7 @@ RUN pip3 install onnxruntime-gpu==1.19.0
 RUN pip3 install tensorrt==8.6.1
 RUN pip3 install pycuda
 
+# 0.8.3 for surya-ocr
 # COPY download_models.sh .
 # RUN chmod +x download_models.sh
 # RUN ./download_models.sh
