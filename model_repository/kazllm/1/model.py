@@ -6,7 +6,7 @@ from threading import Thread
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.llm = Llama(model_path="/assets/kazllm/checkpoint/checkpoints_llama8b_031224_18900-Q4_K_M.gguf", n_ctx = 2048, flash_attn=True) # , n_gpu_layers=-1
+        self.llm = Llama(model_path="/assets/kazllm/checkpoint/checkpoints_llama8b_031224_18900-Q4_K_M.gguf", n_ctx = 2048, flash_attn=True, n_gpu_layers=-1) # , n_gpu_layers=-1
 
     def execute(self, requests):
         responses = []
@@ -62,21 +62,22 @@ class TritonPythonModel:
             }
 
             response_sender = request.get_response_sender()
-            full_text_chunks = []
+            # full_text_chunks = []
 
             def run_inference():
                 for chunk in self.llm.create_chat_completion(**generation_kwargs):
                     delta = chunk["choices"][0]["delta"]
                     if 'content' in delta:
                         partial_text = delta['content']
-                        full_text_chunks.append(partial_text)
+                        # full_text_chunks.append(partial_text)
                         out_output = pb_utils.Tensor(
                             "output", np.array([partial_text], dtype=np.object_)
                         )
                         response_sender.send(
                             pb_utils.InferenceResponse(output_tensors=[out_output])
                         )
-                final_text = "".join(full_text_chunks)
+                # final_text = "".join(full_text_chunks)
+                final_text = ""
                 output_tensor = pb_utils.Tensor(
                     "output", np.array(final_text, dtype=np.object_)
                 )

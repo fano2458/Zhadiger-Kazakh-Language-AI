@@ -102,7 +102,7 @@ def get_response(data, type, role="", question=""):
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
-    print(response.json())
+    # print(response.json())
 
     if response.status_code == 200:
         response_data = response.json()
