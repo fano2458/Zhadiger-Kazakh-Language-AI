@@ -1,20 +1,22 @@
 import triton_python_backend_utils as pb_utils
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import numpy as np
+import torch
 
 
 class TritonPythonModel:
     def initialize(self, args):
+        self.device = torch.device('cpu')
         self.load_model()
 
     def load_model(self):
-        self.model = AutoModelForSeq2SeqLM.from_pretrained('/assets/translator/checkpoint')
+        self.model = AutoModelForSeq2SeqLM.from_pretrained('/assets/translator/checkpoint').to(self.device)
         self.kaz_tokenizer = AutoTokenizer.from_pretrained('/assets/translator/checkpoint', src_lang="kaz_Cyrl")
         self.eng_tokenizer = AutoTokenizer.from_pretrained('/assets/translator/checkpoint', src_lang="eng_Latn")
 
     def preprocess_text(self, texts, lang_type):
         tokenizer = self.kaz_tokenizer if lang_type == "kaz" else self.eng_tokenizer
-        tokenized_inputs = tokenizer(texts, return_tensors="pt")
+        tokenized_inputs = tokenizer(texts, return_tensors="pt").to(self.device)
         return tokenized_inputs, tokenizer
 
     def translate(self, tokenized_inputs, tokenizer, trg_lang):
