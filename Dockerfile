@@ -6,7 +6,7 @@ RUN python3 -m pip cache purge
 
 RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 -y && apt-get install -y wget && apt-get clean
 
-RUN CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=86" FORCE_CMAKE=1 pip3 install llama-cpp-python==0.3.6
+RUN CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=75" FORCE_CMAKE=1 pip3 install llama-cpp-python==0.3.6
 # RUN pip3 install llama-cpp-python==0.3.6
 RUN pip3 install transformers==4.45.2
 RUN pip3 install torch==2.4.1

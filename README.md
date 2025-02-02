@@ -31,13 +31,14 @@ Currently, it contains 7 models:
 ### Prerequisites
 
 - Docker
+- NVIDIA Container Toolkit
 
 ### Installation
 
 1. Clone this repository:
     ```sh
-    git clone https://github.com/fano2458/kaz_ai_triton.git
-    cd kaz_ai_triton
+    git clone https://github.com/fano2458/Zhadiger-Kazakh-Language-AI.git
+    cd Zhadiger-Kazakh-Language-AI
     ```
 
 2. Download the models:
