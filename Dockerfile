@@ -26,4 +26,7 @@ RUN pip3 install pycuda==2024.1.2
 # COPY requirements.txt .
 # RUN pip3 install -r requirements.txt
 
+# COPY onnx2trt.py .
+# RUN python3 onnx2trt.py
+
 ENTRYPOINT [ "tritonserver" ]

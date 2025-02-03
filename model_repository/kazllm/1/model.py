@@ -6,7 +6,7 @@ from threading import Thread
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.llm = Llama(model_path="/assets/kazllm/checkpoint/checkpoints_llama8b_031224_18900-Q4_K_M.gguf", n_ctx = 2048, flash_attn=True, n_gpu_layers=0) # , n_gpu_layers=-1
+        self.llm = Llama(model_path="/assets/kazllm/checkpoint/checkpoints_llama8b_031224_18900-Q4_K_M.gguf", n_ctx = 2048, flash_attn=True, n_gpu_layers=-1)
 
     def execute(self, requests):
         responses = []
@@ -77,7 +77,7 @@ class TritonPythonModel:
                             pb_utils.InferenceResponse(output_tensors=[out_output])
                         )
                 # final_text = "".join(full_text_chunks)
-                final_text = ""
+                final_text = "\n"
                 output_tensor = pb_utils.Tensor(
                     "output", np.array(final_text, dtype=np.object_)
                 )

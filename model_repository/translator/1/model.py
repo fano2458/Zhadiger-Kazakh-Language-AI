@@ -7,6 +7,7 @@ import torch
 class TritonPythonModel:
     def initialize(self, args):
         self.device = torch.device('cpu')
+        self.languages = {'ru': 'rus_Cyrl', 'kk': 'kaz_Cyrl', 'en': 'eng_Latn', 'tr': 'tur_Latn'}
         self.load_model()
 
     def load_model(self):
@@ -20,7 +21,8 @@ class TritonPythonModel:
         return tokenized_inputs, tokenizer
 
     def translate(self, tokenized_inputs, tokenizer, trg_lang):
-        output = self.model.generate(**tokenized_inputs, forced_bos_token_id=tokenizer.convert_tokens_to_ids(trg_lang), max_length=1000)
+        output = self.model.generate(**tokenized_inputs, 
+                                     forced_bos_token_id=tokenizer.convert_tokens_to_ids(self.languages[trg_lang]), max_length=1000)
         translated_sentence = tokenizer.batch_decode(output, skip_special_tokens=True)[0]
         return translated_sentence
 
@@ -32,7 +34,7 @@ class TritonPythonModel:
             texts = [el.decode() for el in texts][0]
 
             lang_type = pb_utils.get_input_tensor_by_name(request, "lang_type").as_numpy()
-            trg_lang = pb_utils.get_input_tensor_by_name(request, "trt_lang").as_numpy()
+            trg_lang = pb_utils.get_input_tensor_by_name(request, "trg_lang").as_numpy()
 
             lang_type = [el.decode() for el in lang_type][0]
             trg_lang = [el.decode() for el in trg_lang][0]

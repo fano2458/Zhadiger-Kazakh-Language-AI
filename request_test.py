@@ -7,7 +7,7 @@ import io
 from scipy.io import wavfile
 
 
-def get_payload(data, type, role="", question=""):
+def get_payload(data, type, role="", question="", lang_type="", trg_lang=""):
     if type == "image_caption" or type == 'ocr':
         encoded_data = base64.b64encode(data).decode('utf-8')
         payload = {
@@ -25,7 +25,7 @@ def get_payload(data, type, role="", question=""):
             "inputs": [
                 {
                     "name": "texts",
-                    "shape": [len(data)],
+                    "shape": [1],
                     "datatype": "BYTES",
                     "data": data
                 },
@@ -33,13 +33,13 @@ def get_payload(data, type, role="", question=""):
                     "name": "lang_type",
                     "shape": [1],
                     "datatype": "BYTES",
-                    "data": data
+                    "data": [lang_type]
                 },
                 {
-                    "name": "trt_lang",
+                    "name": "trg_lang",
                     "shape": [1],
                     "datatype": "BYTES",
-                    "data": data
+                    "data": [trg_lang]
                 }
             ]
         }
@@ -92,22 +92,24 @@ def get_payload(data, type, role="", question=""):
     return payload
 
 
-def get_response(data, type, role="", question=""):
+def get_response(data, type, role="", question="", lang_type="", trg_lang=""):
     url = f"http://localhost:8500/v2/models/{type}/infer"
     headers = {
         'Content-Type': 'application/json',
     }
 
-    payload = get_payload(data, type, role, question)
+    payload = get_payload(data, type, role, question, lang_type, trg_lang)
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
-    # print(response.json())
+    print(response.json())
 
     if response.status_code == 200:
         response_data = response.json()
 
         response_result = response_data['outputs'][0]['data']
+
+        # print(response_result)
 
         if type == "ner":
             response_result = json.loads(response_result[0])
@@ -133,7 +135,7 @@ def test_tts():
 
 
 def test_image_caption():
-    with open("image8.jpg", "rb") as image_file:
+    with open("image.png", "rb") as image_file:
         image_bytes = image_file.read()
 
     start_time = time.time()
@@ -143,7 +145,7 @@ def test_image_caption():
 
 
 def test_ocr():
-    with open("image8.jpg", "rb") as image_file:
+    with open("image.png", "rb") as image_file:
         image_bytes = image_file.read()
 
     start_time = time.time()
@@ -186,14 +188,24 @@ def test_kazllm():
     print(f"Total time is {time.time() - start_time}")
 
 
+def test_translator():
+    text = ["Елдің елордасы — Астана қаласы."]
+    start_time = time.time()
+    result = get_response(text, type="translator", lang_type="kk", trg_lang="en")
+    print(f"Translation: {result}")
+    print(f"Total time is {time.time() - start_time}")
+
+
 if __name__ == "__main__":
     # print("tts time: ")
     # test_tts()
-    print("image caption time: ")
-    test_image_caption()
-    # test_stt()
+    # print("image caption time: ")
+    # test_image_caption()
+    # # test_stt()
     # print("ner time: ")
     # test_ner()
-    # test_kazllm()
+    # # test_kazllm()
     # print("ocr time: ")
     # test_ocr()
+    print("translator time: ")
+    test_translator()

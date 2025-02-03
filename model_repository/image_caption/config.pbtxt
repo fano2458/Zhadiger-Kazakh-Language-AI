@@ -23,9 +23,8 @@ output [
 instance_group [
     {
         count: 1
-        kind: KIND_GPU
-        gpus: [ 0 ]
+        kind: KIND_CPU
     }
 ]
 
-version_policy: { latest: { num_versions: 1}}
+version_policy: {specific: {versions: [2] }}

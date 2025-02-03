@@ -19,8 +19,9 @@ class TritonPythonModel:
 
     def load_models_and_processors(self):
         self.langs = ["kk", "ru", "en"]
-        self.det_processor, self.det_model = load_det_processor(), load_det_model(device="cpu", dtype=torch.float32)
-        self.rec_model, self.rec_processor = load_rec_model(device='cpu', dtype=torch.float32), load_rec_processor()
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.det_processor, self.det_model = load_det_processor(), load_det_model(device=device, dtype=torch.float32)
+        self.rec_processor, self.rec_model = load_rec_processor(), load_rec_model(device=device, dtype=torch.float32)
 
     def preprocess_image(self, image_base64):
         image_bytes = base64.b64decode(image_base64)

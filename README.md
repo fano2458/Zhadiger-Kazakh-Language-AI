@@ -7,7 +7,7 @@ This repository provides AI services for the Kazakh language, including a langua
 Currently, it contains 7 models:
 - `kazllm`: A language model for Kazakh, capable of chatting, answering questions, and text summarization.
 - `ner`: Model for named enteties recognition.
-- `translator`: Model for translation from one Kazakh to English and vice versa.
+- `translator`: Model for translation from Kazakh to English and vice versa.
 - `tts`: Model that generates speech from text written on Kazakh.
 - `ocr`: Model that does optical character recognition on an image.
 - `image_caption`: Model that generates short description for a given image.
@@ -54,13 +54,17 @@ Currently, it contains 7 models:
 
 ### Testing the Model
 
-You can test the model using the `request_test.py` script:
+You can test the models by using `request_test.py` script:
 
 ```sh
 python request_test.py
 ```
 
-This script sends a request to the model server and prints the generated output for the input text.
+LLM streaming output can be tested using `test_streaming.py` script:
+
+```sh
+python test_streaming.py
+```
 
 ### Repository Structure
 
