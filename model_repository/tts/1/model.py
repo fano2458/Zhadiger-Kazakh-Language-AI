@@ -13,7 +13,7 @@ class TritonPythonModel:
 
     def load_model(self):
         self.tokenizer = AutoTokenizer.from_pretrained("/assets/tts/checkpoint")
-        self.model = AutoModelForTextToWaveform.from_pretrained("/assets/tts/checkpoint").to(self.device)
+        self.model = AutoModelForTextToWaveform.from_pretrained("/assets/tts/checkpoint").eval().to(self.device)
 
     def preprocess_text(self, texts):
         inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)

@@ -77,7 +77,7 @@ def get_payload(data, type, role="", question="", lang_type="", trg_lang=""):
                 }
             ]
         }
-    elif type == "tts" or type == "ner":
+    elif type == "tts" or type == "ner" or type == "kazclip":
         payload = {
             "inputs": [
                 {
@@ -102,7 +102,7 @@ def get_response(data, type, role="", question="", lang_type="", trg_lang=""):
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
-    print(response.json())
+    # print(response.json())
 
     if response.status_code == 200:
         response_data = response.json()
@@ -196,6 +196,14 @@ def test_translator():
     print(f"Total time is {time.time() - start_time}")
 
 
+def test_kazclip():
+    text = ["терезенің алдында тұрған адам"]
+    start_time = time.time()
+    result = get_response(text, type="kazclip")
+    print(f"KazClip: {result}")
+    print(f"Total time is {time.time() - start_time}")
+
+
 if __name__ == "__main__":
     # print("tts time: ")
     # test_tts()
@@ -207,5 +215,8 @@ if __name__ == "__main__":
     # # test_kazllm()
     # print("ocr time: ")
     # test_ocr()
-    print("translator time: ")
-    test_translator()
+    # print("translator time: ")
+    # test_translator()
+    print("kazclip time: ")
+    test_kazclip()
+    

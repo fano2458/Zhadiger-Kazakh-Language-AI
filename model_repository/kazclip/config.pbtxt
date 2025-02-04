@@ -1,0 +1,31 @@
+name: "kazclip"
+backend: "python"
+max_batch_size: 0
+
+
+input [
+    {
+        name: "texts"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    }
+]
+
+output [
+    {
+        name: "output"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    }
+]
+
+
+instance_group [
+    {
+        count: 1
+        kind: KIND_GPU
+        gpus: [ 0 ]
+    }
+]
+
+version_policy: { latest: { num_versions: 1}}

@@ -11,7 +11,7 @@ class TritonPythonModel:
         self.load_model()
 
     def load_model(self):
-        self.model = AutoModelForSeq2SeqLM.from_pretrained('/assets/translator/checkpoint').to(self.device)
+        self.model = AutoModelForSeq2SeqLM.from_pretrained('/assets/translator/checkpoint').eval().to(self.device)
         self.kaz_tokenizer = AutoTokenizer.from_pretrained('/assets/translator/checkpoint', src_lang="kaz_Cyrl")
         self.eng_tokenizer = AutoTokenizer.from_pretrained('/assets/translator/checkpoint', src_lang="eng_Latn")
 
@@ -21,8 +21,9 @@ class TritonPythonModel:
         return tokenized_inputs, tokenizer
 
     def translate(self, tokenized_inputs, tokenizer, trg_lang):
-        output = self.model.generate(**tokenized_inputs, 
-                                     forced_bos_token_id=tokenizer.convert_tokens_to_ids(self.languages[trg_lang]), max_length=1000)
+        with torch.no_grad():
+            output = self.model.generate(**tokenized_inputs, 
+                                        forced_bos_token_id=tokenizer.convert_tokens_to_ids(self.languages[trg_lang]), max_length=1000)
         translated_sentence = tokenizer.batch_decode(output, skip_special_tokens=True)[0]
         return translated_sentence
 

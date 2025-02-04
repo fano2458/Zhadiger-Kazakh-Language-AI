@@ -15,7 +15,7 @@ class TritonPythonModel:
     def load_model(self):
         model_checkpoint = "/assets/ner/checkpoint"
         self.tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
-        self.model = AutoModelForTokenClassification.from_pretrained(model_checkpoint).to(self.device)
+        self.model = AutoModelForTokenClassification.from_pretrained(model_checkpoint).eval().to(self.device)
 
     def load_labels(self):
         self.labels_dict = {0:"O", 1:"B-ADAGE", 2:"I-ADAGE", 3:"B-ART", 4:"I-ART", 5:"B-CARDINAL",

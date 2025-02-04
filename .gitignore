@@ -1,6 +1,7 @@
 __pycache__/
 
 *.gguf
+*.pt
 *.pth
 *.safetensors
 *.bin
