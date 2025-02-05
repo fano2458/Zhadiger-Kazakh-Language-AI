@@ -1,3 +1,4 @@
+import base64
 import torch
 import numpy as np
 import torch.nn.functional as F
@@ -34,7 +35,13 @@ class TritonPythonModel:
         top5_indices = scores.squeeze().topk(5).indices
         top5_images = [self.image_paths[i] for i in top5_indices]
 
-        return top5_images
+        encoded_images = []
+        for image_path in top5_images:
+            with open(image_path, "rb") as f:
+                encoded_image = base64.b64encode(f.read()).decode("utf-8")
+                encoded_images.append(encoded_image)
+
+        return encoded_images
 
     def execute(self, requests):
         responses = []

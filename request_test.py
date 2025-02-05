@@ -93,7 +93,7 @@ def get_payload(data, type, role="", question="", lang_type="", trg_lang=""):
 
 
 def get_response(data, type, role="", question="", lang_type="", trg_lang=""):
-    url = f"http://localhost:8500/v2/models/{type}/infer"
+    url = f"https://shrew-above-absolutely.ngrok-free.app/v2/models/{type}/infer"
     headers = {
         'Content-Type': 'application/json',
     }
@@ -203,7 +203,11 @@ def test_kazclip():
     start_time = time.time()
     result = get_response(text, type="kazclip")
     
-    print(f"KazClip: {result}")
+    for i, image in enumerate(result):
+        image = Image.open(io.BytesIO(base64.b64decode(image)))
+        image.save(f"kazclip_{i}.png")
+
+    print(f"KazClip: {len(result)}")
     print(f"Total time is {time.time() - start_time}")
 
 
