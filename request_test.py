@@ -197,9 +197,12 @@ def test_translator():
 
 
 def test_kazclip():
+    import base64
+    from PIL import Image
     text = ["терезенің алдында тұрған адам"]
     start_time = time.time()
     result = get_response(text, type="kazclip")
+    
     print(f"KazClip: {result}")
     print(f"Total time is {time.time() - start_time}")
 

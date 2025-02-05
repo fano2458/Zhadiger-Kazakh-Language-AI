@@ -13,6 +13,7 @@ services:
       - ./:/workspace
       - ./model_repository:/models
       - ./assets:/assets
+      - ./data:/home/zhadiger/Desktop/kaz-clip/data
     environment:
       - LC_ALL=C.UTF-8
       - LANG=C.UTF-8
