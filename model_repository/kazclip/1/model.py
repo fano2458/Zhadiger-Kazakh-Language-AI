@@ -33,7 +33,7 @@ class TritonPythonModel:
         scores = text_features @ self.image_embeddings.t()
 
         top5_indices = scores.squeeze().topk(5).indices
-        top5_images = [self.image_paths[i] for i in top5_indices]
+        top5_images = [f"/{self.image_paths[i]}" for i in top5_indices]
 
         encoded_images = []
         for image_path in top5_images:
