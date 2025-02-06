@@ -5,6 +5,8 @@ import io
 from scipy.io import wavfile
 import numpy as np
 
+torch.set_float32_matmul_precision('high')
+
 
 class TritonPythonModel:
     def initialize(self, args):
@@ -15,12 +17,16 @@ class TritonPythonModel:
         self.tokenizer = AutoTokenizer.from_pretrained("/assets/tts/checkpoint")
         self.model = AutoModelForTextToWaveform.from_pretrained("/assets/tts/checkpoint").eval().to(self.device)
 
+        if hasattr(torch, "compile"):
+            self.model = torch.compile(self.model)
+
     def preprocess_text(self, texts):
         inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)
         return inputs
 
+    @torch.no_grad()
     def generate_waveform(self, inputs):
-        with torch.no_grad():
+        with torch.autocast(device_type=self.device, dtype=torch.bfloat16):
             output = self.model(**inputs).waveform
         return output
 

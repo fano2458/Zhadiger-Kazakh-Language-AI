@@ -13,6 +13,8 @@ sys.path.append('/assets/image_caption')
 from models.End_ExpansionNet_v2 import End_ExpansionNet_v2
 from utils.language_utils import convert_vector_idx2word
 
+torch.set_float32_matmul_precision('high')
+
 
 class TritonPythonModel:
     def initialize(self, args):
@@ -50,6 +52,9 @@ class TritonPythonModel:
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.model.eval()
 
+        if hasattr(torch, "compile"):
+            self.model = torch.compile(self.model)
+
     def load_transforms(self):
         img_size = 384
         self.transf_1 = torchvision.transforms.Compose([torchvision.transforms.Resize((img_size, img_size))])
@@ -73,6 +78,11 @@ class TritonPythonModel:
         tens_image_1 = torchvision.transforms.ToTensor()(preprocess_pil_image)
         tens_image_2 = self.transf_2(tens_image_1)
         return tens_image_2.unsqueeze(0).to(self.device)
+    
+    @torch.no_grad()
+    def predict(self, image):
+        pred, _ = self.model(enc_x=image, enc_x_num_pads=[0], mode='beam_search', **self.beam_search_kwargs)
+        return pred
 
     def execute(self, requests):
         responses = []
@@ -82,8 +92,9 @@ class TritonPythonModel:
             image_base64 = images[0].decode('utf-8')
             image = self.preprocess_image(image_base64)
 
-            with torch.no_grad():
-                pred, _ = self.model(enc_x=image, enc_x_num_pads=[0], mode='beam_search', **self.beam_search_kwargs)
+            with torch.autocast(device_type=self.device, dtype=torch.bfloat16):
+                pred = self.predict(image)
+                
             pred = convert_vector_idx2word(pred[0][0], self.coco_tokens['idx2word_list'])[1:-1]
             pred[-1] = pred[-1] + '.'
             pred = ' '.join(pred).capitalize()
@@ -93,4 +104,3 @@ class TritonPythonModel:
             responses.append(inference_response)
 
         return responses
-

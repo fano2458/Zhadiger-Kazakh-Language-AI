@@ -5,6 +5,8 @@ import numpy as np
 import triton_python_backend_utils as pb_utils
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 
+torch.set_float32_matmul_precision('high')
+
 
 class TritonPythonModel:
     def initialize(self, args):
@@ -16,6 +18,9 @@ class TritonPythonModel:
         model_checkpoint = "/assets/ner/checkpoint"
         self.tokenizer = AutoTokenizer.from_pretrained(model_checkpoint)
         self.model = AutoModelForTokenClassification.from_pretrained(model_checkpoint).eval().to(self.device)
+
+        if hasattr(torch, "compile"):
+            self.model = torch.compile(self.model)
 
     def load_labels(self):
         self.labels_dict = {0:"O", 1:"B-ADAGE", 2:"I-ADAGE", 3:"B-ART", 4:"I-ART", 5:"B-CARDINAL",
@@ -33,8 +38,9 @@ class TritonPythonModel:
         tokenized_inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)
         return tokenized_inputs
 
+    @torch.no_grad()
     def predict(self, tokenized_inputs):
-        with torch.no_grad():
+        with torch.autocast(device_type=self.device, dtype=torch.bfloat16):
             output = self.model(**tokenized_inputs)
         predictions = np.argmax(output.logits.detach().cpu().numpy(), axis=2)
         return predictions

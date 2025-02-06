@@ -3,6 +3,8 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import numpy as np
 import torch
 
+torch.set_float32_matmul_precision('high')
+
 
 class TritonPythonModel:
     def initialize(self, args):
@@ -15,13 +17,17 @@ class TritonPythonModel:
         self.kaz_tokenizer = AutoTokenizer.from_pretrained('/assets/translator/checkpoint', src_lang="kaz_Cyrl")
         self.eng_tokenizer = AutoTokenizer.from_pretrained('/assets/translator/checkpoint', src_lang="eng_Latn")
 
+        if hasattr(torch, "compile"):
+            self.model = torch.compile(self.model)
+
     def preprocess_text(self, texts, lang_type):
         tokenizer = self.kaz_tokenizer if lang_type == "kaz" else self.eng_tokenizer
         tokenized_inputs = tokenizer(texts, return_tensors="pt").to(self.device)
         return tokenized_inputs, tokenizer
 
+    @torch.no_grad()
     def translate(self, tokenized_inputs, tokenizer, trg_lang):
-        with torch.no_grad():
+        with torch.autocast(device_type=self.device, dtype=torch.bfloat16):
             output = self.model.generate(**tokenized_inputs, 
                                         forced_bos_token_id=tokenizer.convert_tokens_to_ids(self.languages[trg_lang]), max_length=1000)
         translated_sentence = tokenizer.batch_decode(output, skip_special_tokens=True)[0]

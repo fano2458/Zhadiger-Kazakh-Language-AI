@@ -9,6 +9,8 @@ sys.path.append('/assets/kazclip')
 from text_encoder import TextTokenizer
 from kazclip_model import KazClip
 
+torch.set_float32_matmul_precision('high') 
+
 
 class TritonPythonModel:
     def initialize(self, args):
@@ -16,17 +18,22 @@ class TritonPythonModel:
 
         self.model = KazClip()
         self.model.load_state_dict(torch.load("/assets/kazclip/checkpoint/model.pt", map_location=self.device))
+
+        if hasattr(torch, "compile"):
+            self.model = torch.compile(self.model)
+
         self.model.eval().to(self.device)
 
         self.tokenizer = TextTokenizer()
         self.image_embeddings = torch.load("/assets/kazclip/precomputed_image_embeddings.pt", map_location=self.device)
         self.image_paths = torch.load("/assets/kazclip/image_paths.pt")
 
+    @torch.no_grad()
     def predict(self, texts):
         tokens = self.tokenizer(texts)
         tokens = {k: v.to(self.device) for k, v in tokens.items()}
 
-        with torch.no_grad():
+        with torch.autocast(device_type=self.device, dtype=torch.bfloat16):  # need to measure the performance to decide whether to use bf16 or fp16 on both CPU and GPU
             _, text_features = self.model(None, tokens)
 
         text_features = F.normalize(text_features, dim=-1)

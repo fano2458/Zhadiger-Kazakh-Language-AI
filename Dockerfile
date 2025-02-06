@@ -9,14 +9,14 @@ RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 -y && apt-get insta
 RUN CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=75" FORCE_CMAKE=1 pip3 install llama-cpp-python==0.3.6
 # RUN pip3 install llama-cpp-python==0.3.6
 RUN pip3 install transformers==4.45.2
-RUN pip3 install torch==2.4.1
-RUN pip3 install torchvision==0.19.1
+RUN pip3 install torch==2.6.0
+RUN pip3 install torchvision==0.21.0
 RUN pip3 install pillow==10.4.0
 RUN pip3 install surya-ocr==0.8.3
 RUN pip3 install scipy==1.10.1
 RUN pip3 install vosk==0.3.45
 RUN pip3 install onnxruntime-gpu==1.19.0
-RUN pip3 install tensorrt==8.6.1
+RUN pip3 install tensorrt==10.8.0.43
 RUN pip3 install pycuda==2024.1.2
 
 # COPY download_models.sh .

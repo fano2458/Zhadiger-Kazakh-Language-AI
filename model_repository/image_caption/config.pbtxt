@@ -27,4 +27,4 @@ instance_group [
     }
 ]
 
-version_policy: {specific: {versions: [2] }}
+version_policy: {specific: {versions: [1] }}
