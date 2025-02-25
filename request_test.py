@@ -13,7 +13,7 @@ def get_payload(data, type, role="", question="", lang_type="", trg_lang=""):
         payload = {
             "inputs": [
                 {
-                    "name": "images",
+                    "name": "texts",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": [encoded_data]
@@ -93,7 +93,8 @@ def get_payload(data, type, role="", question="", lang_type="", trg_lang=""):
 
 
 def get_response(data, type, role="", question="", lang_type="", trg_lang=""):
-    url = f"https://shrew-above-absolutely.ngrok-free.app/v2/models/{type}/infer"
+    url = f"http://localhost:8500/v2/models/{type}/infer"
+    # url = f"https://shrew-above-absolutely.ngrok-free.app/v2/models/{type}/infer"
     headers = {
         'Content-Type': 'application/json',
     }
@@ -135,7 +136,7 @@ def test_tts():
 
 
 def test_image_caption():
-    with open("image.png", "rb") as image_file:
+    with open("image1.jpg", "rb") as image_file:
         image_bytes = image_file.read()
 
     start_time = time.time()
@@ -220,10 +221,10 @@ if __name__ == "__main__":
     # print("ner time: ")
     # test_ner()
     # # test_kazllm()
-    # print("ocr time: ")
-    # test_ocr()
+    print("ocr time: ")
+    test_ocr()
     # print("translator time: ")
     # test_translator()
-    print("kazclip time: ")
-    test_kazclip()
+    # print("kazclip time: ")
+    # test_kazclip()
     

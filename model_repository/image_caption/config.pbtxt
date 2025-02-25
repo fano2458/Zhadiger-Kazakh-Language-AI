@@ -5,7 +5,7 @@ max_batch_size: 0
 
 input [
     {
-        name: "images"
+        name: "texts"
         data_type: TYPE_STRING
         dims: [ -1 ]
     }
@@ -27,4 +27,4 @@ instance_group [
     }
 ]
 
-version_policy: {specific: {versions: [1] }}
+version_policy: {specific: {versions: [2] }}

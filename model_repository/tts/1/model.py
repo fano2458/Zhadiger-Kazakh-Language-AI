@@ -4,21 +4,22 @@ from transformers import AutoTokenizer, AutoModelForTextToWaveform
 import io
 from scipy.io import wavfile
 import numpy as np
+import base64  # added for encoding
 
 torch.set_float32_matmul_precision('high')
 
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.device = torch.device("cpu")
+        self.device = "cpu"
         self.load_model()
 
     def load_model(self):
         self.tokenizer = AutoTokenizer.from_pretrained("/assets/tts/checkpoint")
         self.model = AutoModelForTextToWaveform.from_pretrained("/assets/tts/checkpoint").eval().to(self.device)
 
-        if hasattr(torch, "compile"):
-            self.model = torch.compile(self.model)
+        # if hasattr(torch, "compile"):
+        #     self.model = torch.compile(self.model)
 
     def preprocess_text(self, texts):
         inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)
@@ -26,8 +27,8 @@ class TritonPythonModel:
 
     @torch.no_grad()
     def generate_waveform(self, inputs):
-        with torch.autocast(device_type=self.device, dtype=torch.bfloat16):
-            output = self.model(**inputs).waveform
+        # with torch.autocast(device_type=self.device, dtype=torch.bfloat16):
+        output = self.model(**inputs).waveform
         return output
 
     def postprocess_waveform(self, waveform):
@@ -48,7 +49,10 @@ class TritonPythonModel:
             waveform = self.generate_waveform(inputs)
             wav_bytes = self.postprocess_waveform(waveform)
 
-            output_tensor = pb_utils.Tensor("output", np.frombuffer(wav_bytes, dtype=np.uint8))
+            # Convert wav_bytes to a base64-encoded string
+            wav_str = base64.b64encode(wav_bytes).decode('utf-8')
+
+            output_tensor = pb_utils.Tensor("output", np.array(wav_str, dtype=np.object_))
             inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
             responses.append(inference_response)
 

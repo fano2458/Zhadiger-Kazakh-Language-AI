@@ -80,7 +80,7 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            images = pb_utils.get_input_tensor_by_name(request, "images").as_numpy()
+            images = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
             image_base64 = images[0].decode('utf-8')
             image = self.preprocess_image(image_base64)
 

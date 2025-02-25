@@ -52,8 +52,8 @@ class TritonPythonModel:
         self.model.load_state_dict(checkpoint['model_state_dict'])
         self.model.eval()
 
-        if hasattr(torch, "compile"):
-            self.model = torch.compile(self.model)
+        # if hasattr(torch, "compile"):
+        #     self.model = torch.compile(self.model)
 
     def load_transforms(self):
         img_size = 384
@@ -92,8 +92,8 @@ class TritonPythonModel:
             image_base64 = images[0].decode('utf-8')
             image = self.preprocess_image(image_base64)
 
-            with torch.autocast(device_type=self.device, dtype=torch.bfloat16):
-                pred = self.predict(image)
+            # with torch.autocast(device_type=self.device, dtype=torch.bfloat16):
+            pred = self.predict(image)
                 
             pred = convert_vector_idx2word(pred[0][0], self.coco_tokens['idx2word_list'])[1:-1]
             pred[-1] = pred[-1] + '.'
