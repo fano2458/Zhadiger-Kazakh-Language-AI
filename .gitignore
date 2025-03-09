@@ -16,3 +16,6 @@ x.txt
 
 checkpoint-awq4/
 image.png
+
+nltk_data/
+rag_logs.txt

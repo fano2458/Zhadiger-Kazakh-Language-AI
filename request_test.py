@@ -7,7 +7,7 @@ import io
 from scipy.io import wavfile
 
 
-def get_payload(data, type, role="", question="", lang_type="", trg_lang=""):
+def get_payload(data, type, role="", question="", lang_type="", trg_lang="", file_paths=[]):
     if type == "image_caption" or type == 'ocr':
         encoded_data = base64.b64encode(data).decode('utf-8')
         payload = {
@@ -88,18 +88,41 @@ def get_payload(data, type, role="", question="", lang_type="", trg_lang=""):
                 }
             ]
         }
+    elif type == "rag":
+        payload = {
+            "inputs": [
+                {
+                    "name": "texts",
+                    "shape": [len(data)],
+                    "datatype": "BYTES",
+                    "data": data
+                },
+                {
+                    "name": "user_request",
+                    "shape": [1],
+                    "datatype": "BYTES",
+                    "data": [question]
+                },
+                {
+                    "name": "file_paths",
+                    "shape": [len(file_paths)],
+                    "datatype": "BYTES",
+                    "data": file_paths
+                }
+            ]
+        }
 
     return payload
 
 
-def get_response(data, type, role="", question="", lang_type="", trg_lang=""):
+def get_response(data, type, role="", question="", lang_type="", trg_lang="", file_paths=[]):
     url = f"http://localhost:8500/v2/models/{type}/infer"
     # url = f"https://shrew-above-absolutely.ngrok-free.app/v2/models/{type}/infer"
     headers = {
         'Content-Type': 'application/json',
     }
 
-    payload = get_payload(data, type, role, question, lang_type, trg_lang)
+    payload = get_payload(data, type, role, question, lang_type, trg_lang, file_paths)
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
@@ -212,6 +235,25 @@ def test_kazclip():
     print(f"Total time is {time.time() - start_time}")
 
 
+def test_rag():
+    texts = ["Елдің елордасы — Астана қаласы. Мемлекеттік тілі — қазақ тілі. Орыс тілі мемлекеттік ұйымдарда және жергілікті өзін-өзі басқару органдарында "
+        "ресми түрде қазақ тілімен тең қолданылады. Қазақстанның ұлттық құрамы алуан түрлі. Халықтың басым бөлігін тұрғылықты қазақ халқы құрайды, "
+        "пайыздық үлесі — 70,18%,[9] орыстар — 18,42%, өзбектер — 3,29%, украиндар — 1,36%, ұйғырлар — 1,48%, татарлар — 1,06%, басқа халықтар 5,38%.[10] "
+        "Халықтың 75% астамын мұсылмандар құрайды, православты христиандар — 21%, қалғаны басқа да дін өкілдері.[11] "
+        "Экономикалық көрсеткіштері бойынша дамушы экономика ретінде қарастырылады. Елдің жалпы ішкі өнімі ЖІӨ (номинал) — $205,539 млрд (2018). "
+        "Экономиканың негізгі бағыты — отын-энергетика саласындағы шикізат өндіру, ауыл шаруашылығы (егіншілік). Елдің негізгі валютасы — теңге. ",
+        "The President of the Republic of Kazakhstan shall take office from the moment of swearing to the people the following oath: I solemnly swear that I will faithfully serve the people of Kazakhstan, strictly obse",
+        "Қазақстанның астанасын Алматыдан Ақмолаға ауыстыру туралы ұсынысты Президент Нұрсұлтан Назарбаев ұсынды. Қазақстан Республикасы Жоғарғы Кеңесі 1994 жылы 6 шілдеде ауыстыру туралы шешім қабылдады. Орталық мемлекеттік органдардың Ақмолаға ресми көшуі 1997 жылғы 10 желтоқсанда басталды.",
+        "2005 жылғы 4 желтоқсанда Қазақстанда үшінші жалпыхалықтық президент сайлауы өтті. Нұрсұлтан Назарбаев сайлаушылардың 91,15 % дауысын жинап, жеңіске жетіп, алдағы 7 жылда билікте қалды. Оппозициялық кандидат Жармахан Тұяқбай 6,61 % дауыс жинады. Ел тарихында алғаш рет кандидаттар арасында теледебаттар өтті."]
+    user_request = ["Қазақстанда православты христиандардың пайызы қанша?"]
+    file_paths = ["1.txt", "2.txt", "3.txt", "4.txt"]
+
+    result = get_response(texts, type="rag", question=user_request, file_paths=file_paths)
+    # print(result)
+    for r in result:
+        print(r)
+        print("----")
+
 if __name__ == "__main__":
     # print("tts time: ")
     # test_tts()
@@ -221,10 +263,10 @@ if __name__ == "__main__":
     # print("ner time: ")
     # test_ner()
     # # test_kazllm()
-    print("ocr time: ")
-    test_ocr()
+    # print("ocr time: ")
+    # test_ocr()
     # print("translator time: ")
     # test_translator()
     # print("kazclip time: ")
     # test_kazclip()
-    
+    test_rag()

@@ -18,13 +18,12 @@ RUN pip3 install vosk==0.3.45
 RUN pip3 install onnxruntime-gpu==1.19.0
 RUN pip3 install tensorrt==10.8.0.43
 RUN pip3 install pycuda==2024.1.2
-
-# COPY download_models.sh .
-# RUN chmod +x download_models.sh
-# RUN ./download_models.sh
-
-# COPY requirements.txt .
-# RUN pip3 install -r requirements.txt
+RUN pip3 install pandas==2.2.3
+# RUN pip3 install nltk==3.9.1
+# RUN pip3 install sentence_transformers==3.0.0
+# RUN pip3 install faiss-cpu==1.10.0
+# RUN pip3 install haystack==0.42
+# RUN pip3 install farm-haystack==1.26.4
 
 # COPY onnx2trt.py .
 # RUN python3 onnx2trt.py
