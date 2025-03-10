@@ -13,13 +13,20 @@ class TritonPythonModel:
 
         for request in requests:
             texts = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
-            texts = [el.decode() for el in texts][0]
+            texts = [el.decode() for el in texts]
+
+            formatted_texts = ""
+            for i, text in enumerate(texts):
+                formatted_texts += text
 
             task = pb_utils.get_input_tensor_by_name(request, "task").as_numpy()
             task = [el.decode() for el in task][0]
 
             question = pb_utils.get_input_tensor_by_name(request, "question").as_numpy()
             question = [el.decode() for el in question][0]
+
+            with open("/assets/kazllm_logs.txt", "w") as f:
+                f.write(f"Texts: {texts}\n")
 
             instruction = ""
             role = ""
@@ -46,7 +53,7 @@ class TritonPythonModel:
                 },
                 {
                     "role": "user",
-                    "content": instruction + texts + '\n' + question,
+                    "content": instruction + formatted_texts + '\n' + question,
                 },
             ]
             max_tokens = 2048

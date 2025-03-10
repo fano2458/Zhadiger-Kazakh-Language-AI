@@ -10,6 +10,7 @@ __pycache__/
 
 *.jpg
 *.wav
+*.png
 
 notes.txt
 x.txt

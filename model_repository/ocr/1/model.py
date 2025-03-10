@@ -53,12 +53,17 @@ class TritonPythonModel:
 
         for request in requests:
             base64_images = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
-            image_base64 = base64_images[0].decode('utf-8')
-            image = self.preprocess_image(image_base64)
-            predictions = self.predict(image)
-            formatted_text = self.format_predictions(predictions)
+            
+            formated_outputs = []
 
-            output_tensor = pb_utils.Tensor("output", np.array([formatted_text], dtype=np.object_))
+            for base64_image in base64_images:
+                image_base64 = base64_image.decode('utf-8')
+                image = self.preprocess_image(image_base64)
+                predictions = self.predict(image)
+                formatted_text = self.format_predictions(predictions)
+                formated_outputs.append(formatted_text)
+
+            output_tensor = pb_utils.Tensor("output", np.array(formated_outputs, dtype=np.object_))
             inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
             responses.append(inference_response)
 

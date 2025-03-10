@@ -1,0 +1,90 @@
+name: "ensemble_ocr_rag_kazllm"
+platform: "ensemble"
+
+input [
+    {
+        name: "texts"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    },
+    {
+        name: "user_request"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    },
+    {
+        name: "file_paths"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    },
+    {
+        name: "task"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    }
+]
+
+output [
+    {
+        name: "output"
+        data_type: TYPE_STRING
+        dims: [ -1 ]
+    }
+]
+
+ensemble_scheduling {
+    step [
+        {
+            model_name: "ocr"
+            model_version: -1
+            input_map {
+                key: "texts"
+                value: "texts"
+            }
+            output_map {
+                key: "output"
+                value: "ocr_output"
+            }
+        },
+        {
+            model_name: "rag"
+            model_version: -1
+            input_map {
+                key: "texts"
+                value: "ocr_output"
+            }
+            input_map {
+                key: "user_request"
+                value: "user_request"
+            }
+            input_map {
+                key: "file_paths"
+                value: "file_paths"
+            }
+            output_map {
+                key: "output"
+                value: "rag_output"
+            }
+        },
+        {
+            model_name: "kazllm"
+            model_version: -1
+            input_map {
+                key: "texts"
+                value: "rag_output"
+            }
+            input_map {
+                key: "task"
+                value: "task"
+            }
+            input_map {
+                key: "question"
+                value: "user_request"
+            }
+            output_map {
+                key: "output"
+                value: "output"
+            }
+        }
+    ]
+}
