@@ -4,6 +4,8 @@ import numpy as np
 import triton_python_backend_utils as pb_utils
 from PIL import Image as PIL_Image
 from io import BytesIO
+import fitz  # PyMuPDF
+import os
 import sys
 sys.path.append('/assets/ocr')
 
@@ -11,7 +13,6 @@ from surya.ocr import run_ocr
 from surya.model.detection.model import load_model as load_det_model, load_processor as load_det_processor
 from surya.model.recognition.model import load_model as load_rec_model
 from surya.model.recognition.processor import load_processor as load_rec_processor
-
 
 class TritonPythonModel:
     def initialize(self, args):
@@ -30,13 +31,30 @@ class TritonPythonModel:
         if image.mode != 'RGB':
             image = image.convert("RGB")
         return image
+    
+    def pdf_to_images(self, pdf_bytes):
+        """Convert PDF to individual images."""
+        images = []
+        pdf_document = fitz.open(stream=pdf_bytes, filetype="pdf")
+        
+        for page_num in range(pdf_document.page_count):
+            page = pdf_document.load_page(page_num)
+            pix = page.get_pixmap()
+            img = PIL_Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            images.append(img)
+        
+        pdf_document.close()
+        return images
 
-    def predict(self, image):
-        predictions = run_ocr(
-            [image], [self.langs], 
-            self.det_model, self.det_processor, 
-            self.rec_model, self.rec_processor
-        )
+    def predict(self, images):
+        predictions = []
+        for image in images:
+            result = run_ocr(
+                [image], [self.langs], 
+                self.det_model, self.det_processor, 
+                self.rec_model, self.rec_processor
+            )
+            predictions.append(result)
         return predictions
 
     def format_predictions(self, predictions):
@@ -52,10 +70,17 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            base64_images = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
-            image_base64 = base64_images[0].decode('utf-8')
-            image = self.preprocess_image(image_base64)
-            predictions = self.predict(image)
+            base64_data = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
+            data_base64 = base64_data[0].decode('utf-8')
+            
+            # Check if input is a PDF or an image
+            if data_base64.startswith("JVBER"):
+                pdf_bytes = base64.b64decode(data_base64)
+                images = self.pdf_to_images(pdf_bytes)
+            else:
+                images = [self.preprocess_image(data_base64)]
+
+            predictions = self.predict(images)
             formatted_text = self.format_predictions(predictions)
 
             output_tensor = pb_utils.Tensor("output", np.array([formatted_text], dtype=np.object_))
@@ -63,4 +88,3 @@ class TritonPythonModel:
             responses.append(inference_response)
 
         return responses
-    
