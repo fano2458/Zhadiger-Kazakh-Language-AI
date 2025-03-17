@@ -13,11 +13,6 @@ input [
         dims: [ -1 ]
     },
     {
-        name: "file_paths"
-        data_type: TYPE_STRING
-        dims: [ -1 ]
-    },
-    {
         name: "task"
         data_type: TYPE_STRING
         dims: [ -1 ]
@@ -56,10 +51,6 @@ ensemble_scheduling {
             input_map {
                 key: "user_request"
                 value: "user_request"
-            }
-            input_map {
-                key: "file_paths"
-                value: "file_paths"
             }
             output_map {
                 key: "output"

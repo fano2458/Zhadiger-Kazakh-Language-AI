@@ -14,7 +14,7 @@ torch.set_float32_matmul_precision('high')
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cpu")
 
         self.model = KazClip()
         self.model.load_state_dict(torch.load("/assets/kazclip/checkpoint/model.pt", map_location=self.device))

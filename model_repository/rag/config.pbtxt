@@ -13,11 +13,6 @@ input [
         name: "user_request"
         data_type: TYPE_STRING
         dims: [ -1 ]
-    },
-    {
-        name: "file_paths"
-        data_type: TYPE_STRING
-        dims: [ -1 ]
     }
 ]
 

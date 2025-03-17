@@ -10,7 +10,7 @@ torch.set_float32_matmul_precision('high')
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cpu"
         self.load_model()
         self.load_labels()
 
