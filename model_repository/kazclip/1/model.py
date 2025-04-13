@@ -14,7 +14,7 @@ torch.set_float32_matmul_precision('high')
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.device = torch.device("cpu")
+        self.device = "cpu"
 
         self.model = KazClip()
         self.model.load_state_dict(torch.load("/assets/kazclip/checkpoint/model.pt", map_location=self.device))
@@ -27,20 +27,20 @@ class TritonPythonModel:
         self.tokenizer = TextTokenizer()
         self.image_embeddings = torch.load("/assets/kazclip/precomputed_image_embeddings.pt", map_location=self.device)
         self.image_paths = torch.load("/assets/kazclip/image_paths.pt")
-
+   
     @torch.no_grad()
     def predict(self, texts):
         tokens = self.tokenizer(texts)
         tokens = {k: v.to(self.device) for k, v in tokens.items()}
 
-        with torch.autocast(device_type=self.device, dtype=torch.bfloat16):  # need to measure the performance to decide whether to use bf16 or fp16 on both CPU and GPU
-            _, text_features = self.model(None, tokens)
+        # with torch.autocast(device_type=self.device, dtype=torch.bfloat16):  # need to measure the performance to decide whether to use bf16 or fp16 on both CPU and GPU
+        _, text_features = self.model(None, tokens)
 
         text_features = F.normalize(text_features, dim=-1)
         scores = text_features @ self.image_embeddings.t()
 
         top5_indices = scores.squeeze().topk(5).indices
-        top5_images = [f"/{self.image_paths[i]}" for i in top5_indices]
+        top5_images = [f"/workspace/{self.image_paths[i]}" for i in top5_indices]
 
         encoded_images = []
         for image_path in top5_images:

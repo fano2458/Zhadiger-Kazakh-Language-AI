@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 -y && apt-get insta
 
 RUN CMAKE_ARGS="-DGGML_CUDA=on -DCMAKE_CUDA_ARCHITECTURES=75" FORCE_CMAKE=1 pip3 install llama-cpp-python==0.3.6
 # RUN pip3 install llama-cpp-python==0.3.6
-RUN pip3 install transformers==4.45.2
+RUN pip3 install transformers==4.50.0
 RUN pip3 install torch==2.6.0
 RUN pip3 install torchvision==0.21.0
 RUN pip3 install pillow==10.4.0
