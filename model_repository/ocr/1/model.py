@@ -21,9 +21,9 @@ class TritonPythonModel:
 
     def load_models_and_processors(self):
         self.langs = ["kk", "ru", "en"]
-        device = torch.device("cpu")
-        self.det_processor, self.det_model = load_det_processor(), load_det_model(device=device, dtype=torch.float32)
-        self.rec_processor, self.rec_model = load_rec_processor(), load_rec_model(device=device, dtype=torch.float32)
+        device = torch.device("cuda")
+        self.det_processor, self.det_model = load_det_processor(), load_det_model(device=device, dtype=torch.float16)
+        self.rec_processor, self.rec_model = load_rec_processor(), load_rec_model(device=device, dtype=torch.float16)
 
     def preprocess_image(self, image_base64):
         image_bytes = base64.b64decode(image_base64)
@@ -40,7 +40,6 @@ class TritonPythonModel:
         
         with open("/assets/ocr_pdf_log.txt", "a") as f:
             f.write(f"page count: {pdf_document.page_count}\n")
-
 
         for page_num in range(pdf_document.page_count):
             page = pdf_document.load_page(page_num)

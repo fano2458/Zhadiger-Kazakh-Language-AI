@@ -13,7 +13,8 @@ services:
       - ./:/workspace
       - ./model_repository:/models
       - ./assets:/assets
-      # - ./data:/data
+    env_file:
+      - ./local.env
     environment:
       - LC_ALL=C.UTF-8
       - LANG=C.UTF-8

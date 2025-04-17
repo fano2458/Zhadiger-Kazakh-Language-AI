@@ -24,7 +24,5 @@ nltk_data/
 rag_logs.txt
 
 vlm/
-
 data/
-
 *.env
