@@ -18,8 +18,6 @@ services:
     environment:
       - LC_ALL=C.UTF-8
       - LANG=C.UTF-8
-    env_file:
-      - local.env
     shm_size: "64gb"
     deploy:
       resources:
