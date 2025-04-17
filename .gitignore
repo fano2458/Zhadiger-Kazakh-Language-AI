@@ -22,3 +22,5 @@ image.png
 
 nltk_data/
 rag_logs.txt
+
+*.env
