@@ -6,7 +6,7 @@ from threading import Thread
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.llm = Llama(model_path="/assets/kazllm/checkpoint/checkpoints_llama8b_031224_18900-Q4_K_M.gguf", n_ctx = 2048*4, flash_attn=True, n_gpu_layers=0)
+        self.llm = Llama(model_path="/assets/kazllm/checkpoint/checkpoints_llama8b_031224_18900-Q4_K_M.gguf", n_ctx = 2048*4, flash_attn=True, n_gpu_layers=15)
 
     def execute(self, requests):
         responses = []
