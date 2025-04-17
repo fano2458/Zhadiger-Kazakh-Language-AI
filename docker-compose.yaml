@@ -17,7 +17,6 @@ services:
     environment:
       - LC_ALL=C.UTF-8
       - LANG=C.UTF-8
-      - HUGGINGFACE_TOKEN=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
     shm_size: "64gb"
     deploy:
       resources:

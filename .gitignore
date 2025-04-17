@@ -26,3 +26,5 @@ rag_logs.txt
 vlm/
 
 data/
+
+*.env
