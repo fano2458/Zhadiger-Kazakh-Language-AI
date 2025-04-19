@@ -1,4 +1,4 @@
-name: "image_caption"
+name: "image_caption_en"
 backend: "python"
 max_batch_size: 0
 
@@ -27,4 +27,4 @@ instance_group [
     }
 ]
 
-version_policy: {specific: {versions: [2] }}
+version_policy: {specific: {versions: [1] }}

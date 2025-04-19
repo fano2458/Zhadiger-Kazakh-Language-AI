@@ -23,8 +23,8 @@ class TritonPythonModel:
         self.load_beam_search_config()
 
     def load_model(self):
-        load_path = "/assets/image_caption/checkpoint/kaz_model.pth"
-        dict_path = "/assets/image_caption/checkpoint/vocab_kz.pickle"
+        load_path = "/assets/image_caption/checkpoint/rf_model.pth"
+        dict_path = "/assets/image_caption/checkpoint/vocab_en.pickle"
 
         drop_args = Namespace(enc=0.0, dec=0.0, enc_input=0.0, dec_input=0.0, other=0.0)
         model_args = Namespace(model_dim=512, N_enc=3, N_dec=3, dropout=0.0, drop_args=drop_args)
@@ -44,7 +44,7 @@ class TritonPythonModel:
             d_model=model_args.model_dim, N_enc=model_args.N_enc, N_dec=model_args.N_dec,
             num_heads=8, ff=2048, num_exp_enc_list=[32, 64, 128, 256, 512], num_exp_dec=16,
             output_word2idx=self.coco_tokens['word2idx_dict'], output_idx2word=self.coco_tokens['idx2word_list'],
-            max_seq_len=63, drop_args=model_args.drop_args, rank=self.device
+            max_seq_len=74, drop_args=model_args.drop_args, rank=self.device
         )
 
         self.model.to(self.device)
@@ -64,7 +64,7 @@ class TritonPythonModel:
 
     def load_beam_search_config(self):
         self.beam_search_kwargs = {
-            'beam_size': 5, 'beam_max_seq_len': 63, 'sample_or_max': 'max',
+            'beam_size': 5, 'beam_max_seq_len': 74, 'sample_or_max': 'max',
             'how_many_outputs': 1, 'sos_idx': self.coco_tokens['word2idx_dict'][self.coco_tokens['sos_str']],
             'eos_idx': self.coco_tokens['word2idx_dict'][self.coco_tokens['eos_str']]
         }
@@ -88,7 +88,7 @@ class TritonPythonModel:
         responses = []
 
         for request in requests:
-            images = pb_utils.get_input_tensor_by_name(request, "images").as_numpy()
+            images = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
             image_base64 = images[0].decode('utf-8')
             image = self.preprocess_image(image_base64)
 

@@ -8,7 +8,7 @@ from scipy.io import wavfile
 
 
 def get_payload(data, type, role="", question="", lang_type="", trg_lang="", file_paths=[]):
-    if type == "image_caption" or type == 'ocr':
+    if type == "image_caption_kz" or type == "image_caption_en" or type == 'ocr':
         encoded_data = base64.b64encode(data).decode('utf-8')
         payload = {
             "inputs": [
@@ -158,12 +158,12 @@ def test_tts():
     print(f"Total time is {time.time() - start_time}")
 
 
-def test_image_caption():
+def test_image_caption(lang_type="kz"):
     with open("image1.jpg", "rb") as image_file:
         image_bytes = image_file.read()
 
     start_time = time.time()
-    result = get_response(image_bytes, type="image_caption")
+    result = get_response(image_bytes, type="image_caption_"+lang_type)
     print(f"Caption: {result}")
     print(f"Total time is {time.time() - start_time}")
 
@@ -341,7 +341,7 @@ if __name__ == "__main__":
     # print("tts time: ")
     # test_tts()
     # print("image caption time: ")
-    # test_image_caption()
+    test_image_caption()
     # test_stt()
     # print("ner time: ")
     # test_ner()
@@ -349,7 +349,7 @@ if __name__ == "__main__":
     # print("ocr time: ")
     # test_ocr()
     # print("translator time: ")
-    test_translator()
+    # test_translator()
     # print("kazclip time: ")
     # test_kazclip()
     # test_rag()

@@ -16,6 +16,8 @@ notes.txt
 x.txt
 *.pdf
 *.txt
+*.json
+*.csv
 
 checkpoint-awq4/
 image.png
@@ -26,3 +28,5 @@ rag_logs.txt
 vlm/
 data/
 *.env
+
+image_caption_combine/
