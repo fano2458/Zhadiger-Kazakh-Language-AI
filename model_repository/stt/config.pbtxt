@@ -5,7 +5,7 @@ max_batch_size: 0
 
 input [
   {
-    name: "audio"
+    name: "texts"
     data_type: TYPE_STRING
     dims: [-1]
   }

@@ -36,7 +36,7 @@ class TritonPythonModel:
 
         for request in requests:
             # Retrieve input audio waveform
-            audio_input = pb_utils.get_input_tensor_by_name(request, "audio").as_numpy()
+            audio_input = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
             encoded_audio_waveform = audio_input[0].decode('utf-8')
 
             rate, data = self.preprocess_audio(encoded_audio_waveform)

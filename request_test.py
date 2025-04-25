@@ -47,7 +47,7 @@ def get_payload(data, type, role="", question="", lang_type="", trg_lang="", fil
         payload = {
             "inputs": [
                 {
-                    "name": "audio",
+                    "name": "texts",
                     "shape": [1],
                     "datatype": "BYTES",
                     "data": [base64.b64encode(data).decode('utf-8')]
@@ -123,6 +123,11 @@ def get_response(data, type, role="", question="", lang_type="", trg_lang="", fi
     }
 
     payload = get_payload(data, type, role, question, lang_type, trg_lang, file_paths)
+
+    # print(json.dumps(payload))
+    # save payload to a json
+    with open('payload.json', 'w') as f:
+        json.dump(payload, f)
 
     response = requests.post(url, headers=headers, data=json.dumps(payload))
 
@@ -341,8 +346,8 @@ if __name__ == "__main__":
     # print("tts time: ")
     # test_tts()
     # print("image caption time: ")
-    test_image_caption()
-    # test_stt()
+    # test_image_caption()
+    test_stt()
     # print("ner time: ")
     # test_ner()
     # # test_kazllm()

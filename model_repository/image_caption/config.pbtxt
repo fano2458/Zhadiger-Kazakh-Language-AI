@@ -1,4 +1,4 @@
-name: "image_caption_en"
+name: "image_caption"
 backend: "python"
 max_batch_size: 0
 
