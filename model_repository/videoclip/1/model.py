@@ -1,129 +1,80 @@
-import base64
+import os
+import json
 import torch
 import numpy as np
-import torch.nn.functional as F
 import triton_python_backend_utils as pb_utils
 import clip
-import os
-from tqdm import tqdm
-
 
 class TritonPythonModel:
     def initialize(self, args):
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        # Config uses KIND_CPU, so force CPU to avoid accidental CUDA branches.
+        self.device = "cpu"
+
+        # Load CLIP on CPU
         self.model, self.preprocess = clip.load("ViT-B/32", device=self.device)
-        frame_folder = "/assets/videoclip/video_frames"   
+
+        # Load precomputed embeddings (expects dicts with at least "embedding" and optional "path")
         embedding_folder = "/assets/videoclip/video_embeddings"
         self.embeddings_data = []
-
-        for filename in os.listdir(embedding_folder):
-            if filename.endswith(".pt"):
-                file_path = os.path.join(embedding_folder, filename)
-                metadata = torch.load(file_path, map_location=self.device)
-                self.embeddings_data.append(metadata)
+        if os.path.isdir(embedding_folder):
+            for filename in os.listdir(embedding_folder):
+                if filename.endswith(".pt"):
+                    file_path = os.path.join(embedding_folder, filename)
+                    meta = torch.load(file_path, map_location=self.device)
+                    emb = meta["embedding"].to(self.device).float()
+                    emb = emb / emb.norm(p=2)  # normalize for cosine similarity
+                    meta["embedding"] = emb
+                    if "path" not in meta:
+                        meta["path"] = filename
+                    self.embeddings_data.append(meta)
+        # Optional: precompute a stacked tensor for faster dot products
+        if self.embeddings_data:
+            self.emb_matrix = torch.stack([m["embedding"] for m in self.embeddings_data], dim=0)  # [N, D]
+        else:
+            self.emb_matrix = None
 
     @torch.no_grad()
-    def predict(self, texts):
-        tokens = clip.tokenize([texts]).to(self.device)
-        with torch.no_grad():
-            text_features = self.model.encode_text(tokens)
-        text_features = text_features[0] / torch.norm(text_features[0])
+    def predict(self, text: str):
+        # Encode text
+        tokens = clip.tokenize([text]).to(self.device)
+        text_feat = self.model.encode_text(tokens)[0].float()
+        text_feat = text_feat / text_feat.norm(p=2)
 
-        query_tensor = text_features.to(self.device)
-        similarities = []
+        if self.emb_matrix is None or self.emb_matrix.numel() == 0:
+            return [], []
 
-        for data in tqdm(self.embeddings_data, desc="Computing similarities"):
-            embedding = data['embedding'].to(device)
-            similarity = torch.dot(embedding, query_tensor).item()
-            similarities.append((similarity,data))
+        # Cosine similarity via dot product (both normalized)
+        # sims: [N]
+        sims = torch.mv(self.emb_matrix, text_feat).tolist()
 
-        similarities.sort(key=lambda x: x[0], reverse=True)
-        top3_images =  similarities[:3]
+        # Top-3 indices
+        topk = min(3, len(sims))
+        top_indices = sorted(range(len(sims)), key=lambda i: sims[i], reverse=True)[:topk]
 
-        return top3_images
+        top_paths = [self.embeddings_data[i]["path"] for i in top_indices]
+        top_scores = [float(sims[i]) for i in top_indices]
+        return top_paths, top_scores
 
     def execute(self, requests):
         responses = []
-
         for request in requests:
-            texts = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
-            texts = [el.decode() for el in texts][0]
+            # Input "texts" is TYPE_STRING, dims [-1]. No batching at request level (max_batch_size=0).
+            text_arr = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
+            # Handle bytes/str and potential vector length >1 by joining or taking first.
+            texts = []
+            for el in text_arr:
+                if isinstance(el, (bytes, bytearray)):
+                    texts.append(el.decode("utf-8"))
+                else:
+                    texts.append(str(el))
+            # For this model we'll process the first string; adjust if you want multi-text queries.
+            query = texts[0] if texts else ""
 
-            top3_images = self.predict(texts)
+            top_paths, top_scores = self.predict(query)
 
-            output_tensor = pb_utils.Tensor("output", np.array([top3_images], dtype=np.object_))
-            inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
-            responses.append(inference_response)
+            payload = json.dumps({"paths": top_paths, "scores": top_scores})
+            # Triton STRING tensor => numpy array with dtype=object (each element is a str/bytes)
+            output_tensor = pb_utils.Tensor("output", np.array([payload], dtype=object))
 
+            responses.append(pb_utils.InferenceResponse(output_tensors=[output_tensor]))
         return responses
-    
-
-
-
-
-
-
-
-
-
-#     import base64
-# import torch
-# import numpy as np
-# import torch.nn.functional as F
-# import triton_python_backend_utils as pb_utils
-
-# import sys
-# sys.path.append('/assets/videoclip')
-# from text_encoder import TextTokenizer
-# from videoclip_model import VideoCLIP
-
-# torch.set_float32_matmul_precision('high') 
-
-
-# class TritonPythonModel:
-#     def initialize(self, args):
-#         self.device = "cpu"
-
-#         self.model = VideoCLIP()
-#         self.model.load_state_dict(torch.load("/assets/kazclip/checkpoint/model.pt", map_location=self.device))
-
-#         if hasattr(torch, "compile"):
-#             self.model = torch.compile(self.model)
-
-#         self.model.eval().to(self.device)
-
-#         self.tokenizer = TextTokenizer()
-#         self.image_embeddings = torch.load("/assets/videoclip/precomputed_frames_embeddings.pt", map_location=self.device)
-#         self.image_paths = torch.load("/assets/videoclip/frame_paths.pt")
-   
-#     @torch.no_grad()
-#     def predict(self, texts):
-#         tokens = self.tokenizer(texts)
-#         tokens = {k: v.to(self.device) for k, v in tokens.items()}
-
-#         # with torch.autocast(device_type=self.device, dtype=torch.bfloat16):  # need to measure the performance to decide whether to use bf16 or fp16 on both CPU and GPU
-#         _, text_features = self.model(None, tokens)
-
-#         text_features = F.normalize(text_features, dim=-1)
-#         scores = text_features @ self.image_embeddings.t()
-
-#         top3_indices = scores.squeeze().topk(3).indices
-#         top3_images = [f"{self.image_paths[i]}" for i in top3_indices]
-
-#         return top3_images
-
-#     def execute(self, requests):
-#         responses = []
-
-#         for request in requests:
-#             texts = pb_utils.get_input_tensor_by_name(request, "texts").as_numpy()
-#             texts = [el.decode() for el in texts][0]
-
-#             top3_images = self.predict(texts)
-
-#             output_tensor = pb_utils.Tensor("output", np.array([top3_images], dtype=np.object_))
-#             inference_response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
-#             responses.append(inference_response)
-
-#         return responses
-
